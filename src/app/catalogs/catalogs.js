@@ -11,7 +11,7 @@ function CatalogsConfig($stateProvider){
     $stateProvider
         .state('catalogs', {
             parent: 'buyers.details',
-            url: '/catalogs?search?page?pageSize?searchOn?sortBy?filters',
+            url: '/catalogs',
             templateUrl: 'catalogs/templates/catalogs.tpl.html',
             controller: 'CatalogsCtrl',
             controllerAs: 'catalogs',
