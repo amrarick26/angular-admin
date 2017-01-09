@@ -1,39 +1,19 @@
 angular.module('orderCloud')
-    .config(RelatedProductsConfig)
-    .controller('RelatedProductsCtrl', RelatedProductsController)
+    .component('ocRelatedProducts', {
+        bindings: {
+            productid : '<'
+        },
+        templateUrl: 'relatedProducts/templates/relateProducts.html',
+        controller: ocRelatedProductsCtrl,
+        controllerAs: 'relatedProducts'
+    })
 ;
 
-function RelatedProductsConfig($stateProvider) {
-    $stateProvider
-        .state('relatedProducts', {
-            parent: 'productManagement',
-            templateUrl: 'relatedProducts/templates/relatedProducts.html',
-            url: '/relatedproducts',
-            controller: 'RelatedProductsCtrl',
-            controllerAs: 'relatedProducts',
-            resolve: {
-                Parameters: function ($stateParams, ocParameters) {
-                    return ocParameters.Get($stateParams);
-                },
-                RelatedProducts: function (OrderCloud, Parameters, ProductList) {
-                    console.log('productList', ProductList);
-                }
-            }
-        })
-}
-
-function RelatedProductsController() {
-
-}
-
-function ocRelatedProductsCttrl(OrderCloud){
+function ocRelatedProductsCtrl(OrderCloud){
     var vm = this;
 
     vm.listRelatedProducts = ListRelatedProducts;
     vm.assignRelatedProducts = AssignRelatedProducts;
     vm.removeRelatedProducts = RemoveRelatedProducts;
 
-    function ListRelatedProducts() {
-
-    }
 }
