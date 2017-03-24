@@ -42,12 +42,12 @@ function UserUploadService($q, $timeout, OrderCloud, UploadService) {
                 var userBody = {
                     ID: user.ID,
                     Username: user.Username,
+                    Password: user.Password,
                     FirstName: user.FirstName,
                     LastName: user.LastName,
                     Email: user.Email,
                     Phone: user.Phone,
                     Active: user.Active.toLowerCase() === 'true',
-                    Password: user.Password,
                     xp: {
                         Locations: user.xp.Locations
                     }
@@ -294,12 +294,12 @@ function UserUploadService($q, $timeout, OrderCloud, UploadService) {
             var userData = {
                 ID: user[mapping.ID],
                 Username: user[mapping.Username],
+                Password: user[mapping.Password],
                 FirstName: user[mapping.FirstName],
                 LastName: user[mapping.LastName],
                 Email: user[mapping.Email],
                 Phone: user[mapping.Phone],
                 Active: user[mapping.Active],
-                Password: user[mapping.Password],
                 xp: UploadService.BuildXpObj(user, mapping)
             };
 

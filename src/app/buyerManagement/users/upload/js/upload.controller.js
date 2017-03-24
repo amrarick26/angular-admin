@@ -99,12 +99,12 @@ function UserUploadController($scope, SelectedBuyer, UploadService, UserUploadSe
                 var userMapping = {
                     "ID": "id",
                     "Username": "username",
+                    "Password": "password",
                     "FirstName": "firstname",
                     "LastName": "lastname",
                     "Email": "emailaddress",
                     "Phone": "phone",
                     "Active": "active",
-                    "Password": "password",
                     "xp.Locations": "store_location_id"
                 };
                 var userGroupMapping = {
