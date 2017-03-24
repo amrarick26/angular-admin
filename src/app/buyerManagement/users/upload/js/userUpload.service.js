@@ -47,6 +47,7 @@ function UserUploadService($q, $timeout, OrderCloud, UploadService) {
                     Email: user.Email,
                     Phone: user.Phone,
                     Active: user.Active.toLowerCase() === 'true',
+                    Password: user.Password,
                     xp: {
                         Locations: user.xp.Locations
                     }
@@ -298,6 +299,7 @@ function UserUploadService($q, $timeout, OrderCloud, UploadService) {
                 Email: user[mapping.Email],
                 Phone: user[mapping.Phone],
                 Active: user[mapping.Active],
+                Password: user[mapping.Password],
                 xp: UploadService.BuildXpObj(user, mapping)
             };
 

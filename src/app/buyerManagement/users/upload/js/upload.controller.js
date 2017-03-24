@@ -104,6 +104,7 @@ function UserUploadController($scope, SelectedBuyer, UploadService, UserUploadSe
                     "Email": "emailaddress",
                     "Phone": "phone",
                     "Active": "active",
+                    "Password": "password",
                     "xp.Locations": "store_location_id"
                 };
                 var userGroupMapping = {
