@@ -2,7 +2,7 @@ angular.module('orderCloud')
     .controller('UploadCtrl', UploadController)
 ;
 
-function UploadController($scope, UploadService, ProductUploadService) {
+function UploadController($scope, UploadService, ProductUploadService, UploadUtility) {
     var vm = this;
     vm.productFileData = {};
     vm.attributeFileData = {};
@@ -11,25 +11,15 @@ function UploadController($scope, UploadService, ProductUploadService) {
     vm.parsedProdData = null;
     vm.results = null;
     vm.uploadProgress = [];
+    vm.deleteAllCategories = function(){
+        return UploadUtility.rioPartyCategory();
+    };
 
     vm.selectProductFile = function() {
         //Upload for product information
         $('#productCSV').bind('change', productFileSelected);
 
         $('#productCSV').click();
-    };
-
-    vm.selectAttributeFile = function() {
-        //Upload for product attribute information (product.xp.attributes[])
-        $('#attributeCSV').bind('change', attributeFileSelected);
-
-        $('#attributeCSV').click();
-    };
-
-    vm.selectCategoryFile = function() {
-        $('#categoryCSV').bind('change', categoryFileSelected);
-
-        $('#categoryCSV').click();
     };
 
     vm.clearProductFile = function() {
@@ -58,60 +48,27 @@ function UploadController($scope, UploadService, ProductUploadService) {
         $('#attributeCSV').val('');
     };
 
+    // /==============/==============/==============/==============/==============/==============/==============
+
     function productFileSelected(event) {
+        // JUST UPLOAD TO PRODUCT FILE SLOT TO DO CUSTOM CSV 
         $scope.$apply(function() {
             vm.productFileData.Name = event.target.files[0].name;
             vm.productFileData.Event = event;
             vm.parsedData = null;
-            if(vm.productFileData.Name && vm.attributeFileData.Name && vm.categoryFileData.Name) parsedData();
+            parsedData();
         });
-    }
-
-    function attributeFileSelected(event) {
-        $scope.$apply(function() {
-            vm.attributeFileData.Name = event.target.files[0].name;
-            vm.attributeFileData.Event = event;
-            vm.parsedData = null;
-            if(vm.productFileData.Name && vm.attributeFileData.Name && vm.categoryFileData.Name) parsedData();
-        });
-    }
-
-    function categoryFileSelected(event) {
-        $scope.$apply(function() {
-            vm.categoryFileData.Name = event.target.files[0].name;
-            vm.categoryFileData.Event = event;
-            vm.parsedData = null;
-            if(vm.productFileData.Name && vm.attributeFileData.Name && vm.categoryFileData.Name) parsedData();
-        })
     }
 
     function parsedData() {
-        return UploadService.Parse([{ProductFile: vm.productFileData.Event}, {AttributeFile: vm.attributeFileData.Event}, {CategoryFile: vm.categoryFileData.Event}])
+        return UploadService.Parse([{File: vm.productFileData.Event}])
             .then(function(parsed) {
-                var productMapping = {
-                    "ID": "sku",
-                    "Name": "name",
-                    "Description": "description_long",
-                    "CategoryID": "CategoryID",
-                    "xp.url_detail": "url_detail",
-                    "xp.image.URL": "image",
-                    "xp.description_short": "description_short",
-                    "xp.attributes": "attributes",
-                    "Price": "price_retail"
-                };
-                var categoryMapping = {
-                    "ID": "category_id",
-                    "Name": "category_name",
-                    "ParentID": "parent_category_id"
-                };
-                vm.parsedCatData = ProductUploadService.ValidateCategories(parsed.CategoryFile, categoryMapping);
-
-                var combined = ProductUploadService.Combine(parsed.ProductFile, parsed.AttributeFile);
-                vm.parsedProdData = ProductUploadService.ValidateProducts(combined.productData, productMapping);
-                vm.parsedProdData.ProductCount = combined.productData.length;
-                vm.parsedCatData.CategoryCount = vm.parsedCatData.Categories.length;
+                return UploadUtility.rioPartyCategory(parsed.File);
             });
     }
+
+    // /==============/==============/==============/==============/==============/==============/==============
+
 
     vm.upload = function() {
         vm.results = null;
