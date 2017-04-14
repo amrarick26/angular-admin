@@ -8,7 +8,7 @@ function UploadUtilityService(OrderCloud, $q, toastr, $exceptionHandler) {
         rioPartyCategory: _rioPartyCategory, //creates party to category assignment
         rioProductCategory: _rioProductCategory, //creates product to category assignment
         rioProductPartyPS: _productPartyPS,
-        deepCategoryAssignment: _deepCategoryAssignment
+        uploadCategoryImages: _uploadCategoryImages
     };
 
     function _rioPricing(assignments) {
@@ -197,6 +197,24 @@ function UploadUtilityService(OrderCloud, $q, toastr, $exceptionHandler) {
                     }
                 });
         }
+    }
+
+    function _uploadCategoryImages(categories){
+        var queue = [];
+        var errors = [];
+        _.each(categories, function(category){
+            queue.push(function(){
+                var partialCat = {xp:{image:{URL:category.url}}};
+                return OrderCloud.Categories.Patch(category.categoryid, partialCat, 'caferio')
+                    .catch(function(err){
+                        errors.push(category.categoryid);
+                    });
+            }());
+        });
+        return $q.all(queue)
+            .then(function(){
+                console.log(errors.join('\n'));
+            });
     }
 
 
