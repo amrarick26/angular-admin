@@ -1,6 +1,6 @@
 {
   "appname": "DFSI Admin",
-  "scope": "ProductAdmin ProductReader InventoryAdmin ProductAssignmentAdmin BuyerAdmin BuyerReader CategoryAdmin CategoryReader AddressAdmin AddressReader CostCenterAdmin CostCenterReader PromotionAdmin PromotionReader CreditCardAdmin CreditCardReader OrderAdmin OrderReader UnsubmittedOrderReader PriceScheduleAdmin PriceScheduleReader SpendingAccountAdmin SpendingAccountReader BuyerUserAdmin BuyerUserReader UserGroupAdmin UserGroupReader ApprovalRuleAdmin ApprovalRuleReader PermissionAdmin AdminUserAdmin AdminUserReader AdminUserGroupAdmin AdminUserGroupReader MessageConfigAssignmentAdmin CatalogReader CatalogAdmin MeAdmin MeXpAdmin MeAddressAdmin MeCreditCardAdmin OverrideUnitPrice OverrideShipping OverrideTax",
+  "scope": "FullAccess",
   "clientid": "70836978-8494-4C33-9296-6BAB2E6CB1F0",
   "environment": "prod",
   "catalogid": "caferio",

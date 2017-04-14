@@ -7,7 +7,8 @@ function UploadUtilityService(OrderCloud, $q, toastr, $exceptionHandler) {
         cleanCatalogAssignments: _cleanCatalogAssignments, // delete all party to category assigments
         rioPartyCategory: _rioPartyCategory, //creates party to category assignment
         rioProductCategory: _rioProductCategory, //creates product to category assignment
-        rioProductPartyPS: _productPartyPS
+        rioProductPartyPS: _productPartyPS,
+        deepCategoryAssignment: _deepCategoryAssignment
     };
 
     function _rioPricing(assignments) {
@@ -197,6 +198,7 @@ function UploadUtilityService(OrderCloud, $q, toastr, $exceptionHandler) {
                 });
         }
     }
+
 
     return service;
 }

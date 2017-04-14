@@ -2,6 +2,167 @@ angular.module('orderCloud')
 	.controller('HomeCtrl', HomeController)
 ;
 
-function HomeController() {
+function HomeController($q, toastr, OrderCloud, CupsUtility, $exceptionHandler) {
 	var vm = this;
+	vm.errors = [];
+	vm.test = stripSpecialChars;
+
+	function stripSpecialChars(){
+        return CupsUtility.ListAll(OrderCloud.Products.ListAssignments, null, null, null, 'company', null, 'page', 100, 'caferio')
+            .then(function(assignmentList){
+                var productIDs = _.pluck(assignmentList.Items, 'ProductID');
+                return stripChars(productIDs);
+            });
+    }
+
+    function stripChars(remainingProductIDs){
+		var pageSize = 50; //keep this small so joining ids doesnt max char limit
+        var chunk = remainingProductIDs.splice(0, pageSize);
+        return OrderCloud.Products.List(null, null, pageSize, null, null, {ID: chunk.join('|')})
+            .then(function(productList){
+                var queue = [];
+                _.each(productList.Items, function(p){
+					var shouldUpdate = false;
+					//API doesn't recognize the character on update/patch so need to first replace it with a
+					//placeholder and then delete the placeholder
+                    p.Name = p.Name.replace(/\uFFFD/g, 'PLACEHOLDER');
+                    p.Description = p.Description.replace(/\uFFFD/g, 'PLACEHOLDER');
+					if(p && p.xp && p.xp["description_short"]) {
+						p.xp["description_short"] = p.xp["description_short"].replace(/\uFFFD/g, 'PLACEHOLDER');
+						if(p.xp["description_short"].indexOf('PLACEHOLDER') > -1) shouldUpdate = true;
+					}
+					if(p.Name.indexOf('PLACEHOLDER') > -1 || p.Description.indexOf('PLACEHOLDER') > -1) shouldUpdate = true;
+
+					if(shouldUpdate){
+						queue.push(function(){
+							return OrderCloud.Products.Update(p.ID, p)
+								.catch(function(){
+									vm.errors.push(p.ID);
+								});
+						}());
+					}
+                });
+                return $q.all(queue)
+                    .then(function(results){
+						var updateQueue = [];
+						_.each(results, function(p){
+							p.Name = p.Name.replace(/PLACEHOLDER/g, '');
+							p.Description = p.Description.replace(/PLACEHOLDER/g, '');
+							if(p && p.xp && p.xp["description_short"]) {
+								p.xp["description_short"] = p.xp["description_short"].replace(/PLACEHOLDER/g, '');
+							}
+							updateQueue.push(function(){
+								return OrderCloud.Products.Update(p.ID, p)
+									.catch(function(){
+										vm.errors.push(p.ID);
+									});
+								}());
+						});
+						return $q.all(updateQueue)
+							.then(function(moarResults){
+								if(remainingProductIDs.length) {
+									return stripChars(remainingProductIDs);
+								} else {
+									var errors = vm.errors.join('\n');
+									console.log(errors);
+									return 'yay';
+								}
+							});
+                    });
+            });
+    }
+
+    function _deepCategoryAssignment() {
+		var tokenRequest = {
+			clientID: '7FC87166-D42A-4F2D-9587-159D98156314',
+			Claims: ['FullAccess']
+		};
+		return OrderCloud.Users.GetAccessToken('ccarlson', tokenRequest, 'caferio')
+			.then(function(token) {
+				return OrderCloud.Auth.SetImpersonationToken(token.access_token);
+			})
+			.then(function() {
+				var listItems;
+				var queue =[];
+				return OrderCloud.As().Me.ListCategories(null, 1, 100, null, null, null, 'all', 'caferio')
+					.then(function(data){
+						listItems = data;
+						if(data.Meta.TotalPages > data.Meta.Page){
+							var page = data.Meta.Page;
+							while(page < data.Meta.TotalPages) {
+								page +=1;
+								queue.push(OrderCloud.As().Me.ListCategories(null, page, 100, null, null, null, 'all', 'caferio'));
+							}
+						}
+						return $q.all(queue)
+							.then(function(results){
+								_.each(results, function(result){
+									listItems.Items = [].concat(listItems.Items, result.Items);
+								});
+								var fullCatList = angular.copy(listItems.Items);
+								return checkCategory(listItems.Items, fullCatList);
+							});
+					});
+			})
+			.catch(function(ex){
+				$exceptionHandler(ex);
+			});
+    }
+	
+
+    function checkCategory(categories, fullCatList) {
+        var category = categories.pop();
+        if (category && category.ParentID) {
+            return OrderCloud.Categories.ListProductAssignments(category.ID, null, null, 100, 'caferio')
+                .then(function(assignmentList) {
+					var assignedProducts = _.pluck(assignmentList.Items, 'ProductID');
+					assignToParentCat(category, assignedProducts, categories, fullCatList);
+					}
+				);
+        } else {
+            if (categories.length) {
+                return checkCategory(categories, fullCatList);
+            } else {
+                return finish(vm.errors.join('\n'));
+            }
+        }
+    }
+
+	function assignToParentCat(category, assignedProducts, remainingCategories, fullCatList){
+		return OrderCloud.As().Me.ListProducts(null, null, 100, null, null, {CategoryID: category.ParentID})
+			.then(function(productList) {
+				var products = _.pluck(productList.Items, 'ID');
+				var parentCat = _.findWhere(fullCatList, {ID: category.ParentID});
+				var productsToAssign = _.difference(products, assignedProducts);
+
+				if(!productsToAssign && !parentCat && remainingCategories.length) return checkCategory(remainingCategories, fullCatList);
+				if(!productsToAssign && !parentCat && !remainingCategories.length) return finish();
+				
+				var assignmentQueue = [];
+				_.each(productsToAssign, function(pID) {
+					assignmentQueue.push(function() {
+						return OrderCloud.Categories.SaveProductAssignment({CategoryID: category.ID, ProductID: pID}, 'caferio')
+							.catch(function() {
+								vm.errors.push({ProductID: pID, CategoryID: category.ID});
+								console.log('ProductID: ' + pID + ', CategoryID:' + category.ID);
+							});
+					}());
+				});
+				return $q.all(assignmentQueue)
+					.then(function() {
+						if (parentCat) {
+							return assignToParentCat(parentCat, assignedProducts, remainingCategories, fullCatList);
+						}
+						else if(remainingCategories.length){
+							checkCategory(remainingCategories, fullCatList);
+						} else {
+							return finish(vm.errors.join('\n'));
+						}
+					});
+			});
+	}
+
+	function finish() {
+        toastr.success('Finished', 'Success');
+    }
 }
