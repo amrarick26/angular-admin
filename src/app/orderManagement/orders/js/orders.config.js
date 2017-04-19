@@ -23,20 +23,26 @@ function OrdersConfig($stateProvider) {
                 BuyerCompanies: function(OrderCloud) {
                     return OrderCloud.Buyers.List(null, 1, 100);
                 },
-                UserGroupsList: function($q, OrderCloud, Parameters, BuyerCompanies) {
+                UserGroupsList: function($q, OrderCloud, Parameters, BuyerCompanies, ocUtility) {
                     var queue = [];
                     _.each(BuyerCompanies.Items, function(buyer) {
                         queue.push(function(){
-                            return OrderCloud.UserGroups.List(null, null, 100, null, null, null, buyer.ID)
-                                .then(function(data) {
-                                    return data.Items;
+                            return ocUtility.ListAll(OrderCloud.Addresses.List, null, 'page', 100, null, null, null, buyer.ID)
+                                .then(function(addresses) {
+                                    return ocUtility.ListAll(OrderCloud.UserGroups.List, null, 'page', 100, null, null, null, buyer.ID)
+                                        .then(function(userGroups) {
+                                            var userGroupsArr = [];
+                                            _.each(addresses.Items, function(address) {
+                                                userGroupsArr.push(_.findWhere(userGroups.Items, {ID: address.CompanyName}));
+                                            });
+                                            return _.compact(userGroupsArr);
+                                        })
                                 });
                         }());
                     });
                     return $q.all(queue)
                         .then(function(results) {
-                            var userGroups = [].concat.apply([], results);
-                            return userGroups;
+                            return [].concat.apply([], results);
                         })
                 }
             }
