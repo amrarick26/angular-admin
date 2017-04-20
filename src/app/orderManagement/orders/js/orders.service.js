@@ -2,12 +2,13 @@ angular.module('orderCloud')
     .factory('ocOrdersService', OrderCloudOrdersService)
 ;
 
-function OrderCloudOrdersService($q, $filter, OrderCloud) {
+function OrderCloudOrdersService($q, $filter, OrderCloudSDK) {
     var service = {
         List: _list
     };
     
     function _list(parameters) {
+        var deferred = $q.defer();
 
         function convertToDate(toDate) {
             var result = new Date(toDate);
@@ -23,50 +24,31 @@ function OrderCloudOrdersService($q, $filter, OrderCloud) {
             parameters.filters.DateSubmitted = [('<' + convertToDate(parameters.toDate))];
         }
 
-        if (parameters.filters && parameters.FromUserGroupID) {
-            parameters.filters['xp.CustomerNumber'] = parameters.FromUserGroupID;
-        }
+        //TODO: uncomment when ! operator is fixed in API EX-1166
+        //angular.extend(parameters.filters, {status: '!Unsubmitted'});
 
-        if (parameters.filters && parameters.FromCompanyID) {
-            parameters.filters.FromCompanyID = parameters.FromCompanyID;
-        }
-
-        if (parameters.filters && parameters.status) {
-            parameters.filters.status = parameters.status;
-        }
-
-        var filters = angular.extend({status: '!Unsubmitted'}, parameters.filters);
-
-        return OrderCloud.Orders.ListIncoming(null, null, parameters.search, parameters.page, parameters.pageSize, parameters.searchOn, parameters.sortBy, filters, parameters.buyerID)
+        OrderCloudSDK.Orders.List('incoming', parameters)
             .then(function(data) {
-                return gatherBuyerCompanies(data)
+                gatherBuyerCompanies(data);
             });
 
-        function gatherBuyerCompanies(orders) {
-            var buyerIDs = _.uniq(_.pluck(orders.Items, 'FromCompanyID'));
-            return OrderCloud.Buyers.List(null, 1, 100, null, null, {ID: buyerIDs.join('|')})
+        function gatherBuyerCompanies(data) {
+            var buyerIDs = _.uniq(_.pluck(data.Items, 'FromCompanyID'));
+            var options = {
+                page: 1,
+                pageSize: 100,
+                filters: {ID: buyerIDs.join('|')}
+            };
+            OrderCloudSDK.Buyers.List(options)
                 .then(function(buyerData) {
-                    var queue = [];
-                    _.each(orders.Items, function(order) {
+                    _.map(data.Items, function(order) {
                         order.FromCompany = _.findWhere(buyerData.Items, {ID: order.FromCompanyID});
-                        queue.push(getUserGroups(order))
                     });
-                    return $q.all(queue)
-                        .then(function(results){
-                            orders.Items = [].concat.apply([], results);
-                            return orders;
-                        })
+                    deferred.resolve(data);
                 });
-
-            function getUserGroups(order) {
-                return OrderCloud.UserGroups.Get(order.xp.CustomerNumber, order.FromCompanyID)
-                    .then(function(userGroup) {
-                        order.FromUserGroup = userGroup;
-                        order.FromUserGroupID = userGroup.ID;
-                        return order;
-                    });
-            }
         }
+        
+        return deferred.promise;
     }
     
     return service;

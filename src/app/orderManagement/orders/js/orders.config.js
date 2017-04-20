@@ -17,9 +17,10 @@ function OrdersConfig($stateProvider) {
                 Parameters: function($stateParams, ocParameters) {
                     return ocParameters.Get($stateParams);
                 },
-                OrderList: function(ocOrdersService, OrderCloud, Parameters) {
+                OrderList: function(ocOrdersService, Parameters) {
                     return ocOrdersService.List(Parameters);
                 },
+<<<<<<< HEAD
                 BuyerCompanies: function(OrderCloud) {
                     return OrderCloud.Buyers.List(null, 1, 100);
                 },
@@ -38,6 +39,14 @@ function OrdersConfig($stateProvider) {
                             var userGroups = [].concat.apply([], results);
                             return userGroups;
                         })
+=======
+                BuyerCompanies: function(OrderCloudSDK) {
+                    var options = {
+                        page: 1,
+                        pageSize: 100
+                    };
+                    return OrderCloudSDK.Buyers.List(options);
+>>>>>>> ac68fad1f47bd2f7eff5d66c96ba2dfbd9e8a5ac
                 }
             }
         })
