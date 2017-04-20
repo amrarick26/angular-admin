@@ -15,9 +15,9 @@ function BaseConfig($stateProvider) {
                     .catch(function(){
                         LoginService.Logout();
                     });
-            },
-            Catalog: function(OrderCloud, catalogid) {
-                return OrderCloud.Catalogs.Get(catalogid);
+            //},
+            //Catalog: function(OrderCloudSDK, catalogid) {
+            //    return OrderCloudSDK.Catalogs.Get(catalogid);
             }
         }
     });
