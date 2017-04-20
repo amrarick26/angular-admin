@@ -1,7 +1,7 @@
 angular.module('orderCloud')
     .controller('BaseCtrl', BaseController);
 
-function BaseController(CurrentUser, $state, catalogid) {
+function BaseController(CurrentUser, $state) {
     var vm = this;
     vm.currentUser = CurrentUser;
 
