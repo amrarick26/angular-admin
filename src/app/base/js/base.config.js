@@ -10,14 +10,8 @@ function BaseConfig($stateProvider) {
         controller: 'BaseCtrl',
         controllerAs: 'base',
         resolve: {
-            CurrentUser: function($q, $state, OrderCloudSDK, LoginService) {
-                return OrderCloudSDK.Me.Get()
-                    .catch(function(){
-                        LoginService.Logout();
-                    });
-            //},
-            //Catalog: function(OrderCloudSDK, catalogid) {
-            //    return OrderCloudSDK.Catalogs.Get(catalogid);
+            CurrentUser: function(OrderCloudSDK) {
+                return OrderCloudSDK.Me.Get();
             }
         }
     });
