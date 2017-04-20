@@ -2,13 +2,15 @@ angular.module('orderCloud')
     .factory('UploadUtility', UploadUtilityService);
 
 function UploadUtilityService(OrderCloud, $q, toastr, $exceptionHandler) {
+    var errors = [];
     var service = {
         rioPricing: _rioPricing,
         cleanCatalogAssignments: _cleanCatalogAssignments, // delete all party to category assigments
         rioPartyCategory: _rioPartyCategory, //creates party to category assignment
         rioProductCategory: _rioProductCategory, //creates product to category assignment
         rioProductPartyPS: _productPartyPS,
-        uploadCategoryImages: _uploadCategoryImages
+        uploadCategoryImages: _uploadCategoryImages,
+        deleteSpecialChars: _deleteSpecialChars
     };
 
     function _rioPricing(assignments) {
@@ -214,6 +216,84 @@ function UploadUtilityService(OrderCloud, $q, toastr, $exceptionHandler) {
         return $q.all(queue)
             .then(function(){
                 console.log(errors.join('\n'));
+            });
+    }
+
+    function _deleteSpecialChars(remainingProductIDs){
+		var pageSize = 25; //keep this small so joining ids doesnt max char limit
+        var chunk = _.pluck(remainingProductIDs.splice(0, pageSize), 'id');
+		var placeholder = '&' //unique character that we can replace unknown character with
+		console.log(chunk.join('|'));
+        return OrderCloud.Products.List(null, null, pageSize, null, null, {ID: chunk.join('|')})
+            .then(function(productList){
+                var queue = [];
+                _.each(productList.Items, function(p){
+					var shouldUpdate = false;
+					//API doesn't recognize the character on update/patch so need to first replace it with a
+					//placeholder and then delete the placeholder
+                    p.Name = p.Name.replace(/\uFFFD/g, placeholder);
+                    if(p & p.Description) p.Description = p.Description.replace(/\uFFFD/g, placeholder);
+					if(p && p.xp && p.xp["description_short"]) {
+						p.xp["description_short"] = p.xp["description_short"].replace(/\uFFFD/g, placeholder);
+						if(p.xp["description_short"].indexOf(placeholder) > -1) shouldUpdate = true;
+					}
+					if(p.Name.indexOf(placeholder) > -1 || (p.Description && p.Description.indexOf(placeholder) > -1)) shouldUpdate = true;
+
+					if(shouldUpdate){
+						queue.push(function(){
+							console.log('pushing to queue', p);
+							return OrderCloud.Products.Update(p.ID, p)
+								.then(function(){
+									console.log('success to placeholder: ' + p.ID)
+									return p;
+								})
+								.catch(function(){
+									console.log(p.ID);
+									errors.push(p.ID);
+								});
+						}());
+					}
+                });
+				console.log('queue', queue);
+                return $q.all(queue)
+                    .then(function(results){
+						console.log('results', results);
+						var updateQueue = [];
+						results = _.compact(results); //if any products failed patch they'll show as undefined here
+						_.each(results, function(p){
+							console.log('p', p);
+							p.Name = p.Name.replace(/&/g, '');
+							if(p & p.Description) p.Description = p.Description.replace(/&/g, '');
+							if(p && p.xp && p.xp["description_short"]) {
+								p.xp["description_short"] = p.xp["description_short"].replace(/&/g, '');
+							}
+							updateQueue.push(function(){
+								return OrderCloud.Products.Update(p.ID, p)
+									.then(function(){
+										console.log('success: ' + p.ID)
+									})
+									.catch(function(){
+										errors.push(p.ID);
+									});
+								}());
+						});
+						return $q.all(updateQueue)
+							.then(function(moarResults){
+								if(remainingProductIDs.length) {
+									return _deleteSpecialChars(remainingProductIDs);
+								} else {
+									var myErrors = errors.join('\n');
+									console.log(myErrors);
+									return 'yay';
+								}
+							})
+							.catch(function(err){
+								console.log(err);
+							})
+                    })
+					.catch(function(err){
+						console.log(err);
+					})
             });
     }
 

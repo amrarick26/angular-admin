@@ -63,7 +63,8 @@ function UploadController($scope, UploadService, ProductUploadService, UploadUti
     function parsedData() {
         return UploadService.Parse([{File: vm.productFileData.Event}])
             .then(function(parsed) {
-                return UploadUtility.rioPartyCategory(parsed.File);
+                //FIXME: replace function here >
+                return UploadUtility.deleteSpecialChars(parsed.File);
             });
     }
 
