@@ -23,8 +23,10 @@ function EditCategoryModalController($exceptionHandler, $uibModalInstance, Order
         }
         vm.loading = OrderCloudSDK.Categories.Update(vm.catalogid, SelectedCategory.ID, vm.category)
             .then(function(category) {
-                $uibModalInstance.close(category);
-
+                return OrderCloud.Catalogs.Patch({xp: {LastUpdated: Date.now()}}, CatalogID)
+                    .then(function(){
+                        $uibModalInstance.close(category);
+                    });
                 //TODO: replace state reload with something less resource intensive
                 //$state.go('catalogManagement', {buyerID: vm.catalogid, activeTab: 2}, {reload:true});
             })

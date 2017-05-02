@@ -1,6 +1,7 @@
 {
-  "appname": "Angular Seller",
-  "clientid": "FA2E05CB-40DE-4210-AF48-AB7BF02B8F0B",
+  "appname": "DFSI Admin",
+  "clientid": "70836978-8494-4C33-9296-6BAB2E6CB1F0",
+  "catalogid": "caferio",
   "environment": "staging",
   "defaultstate": "home",
   "html5mode": false,
