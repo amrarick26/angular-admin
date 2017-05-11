@@ -15,7 +15,6 @@ angular.module('orderCloud', [
         'treeControl',
         'hl.sticky',
         'angularPayments',
-        'ordercloud-angular-sdk',
-        'LocalForageModule'
+        'ordercloud-angular-sdk'
     ]
 );
