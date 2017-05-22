@@ -1,0 +1,63 @@
+<header class="l-page-header">
+    <h3 class="l-page-header__title">
+        Images
+    </h3>
+    <!--====== CREATE ======-->
+    <div class="l-page-header__btns" oc-if-roles="CostCenterAdmin">
+        <button type="button" ng-disabled="buyerImages.images.Items.length >= 7" class="btn btn-primary btn-block" ng-click="buyerImages.uploadImage()"><i class="fa fa-plus-circle"></i>
+            New Image
+        </button>
+    </div>
+</header>
+
+
+<div cg-busy="buyerImages.searchLoading">
+    <div class="no-matches" ng-if="!buyerImages.images.Items.length">
+        <b>No matches found.</b>
+        <b>This buyer organization does not have any images.</b>
+    </div>
+    <div ng-if="buyerImages.images.Items.length">
+        <div class="row">
+            <div class="col-md-6">
+                <oc-carousel buyer="buyerImages.buyer"></oc-carousel>
+            </div>
+            <div class="col-md-6">
+                <form name="buyerImages.form" class="form-horizontal" ng-submit="buyerImages.submit()" autocomplete="off" novalidate oc-pretty-submit>
+                    <fieldset class="form-group">
+                        <label class="col-sm-3 control-label" for="imageID">Image ID</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="imageID" name="ID" pattern="([A-Za-z0-9\-\_]+)" pattern-err-type="ID_Name" ng-model="buyerImages.newImage.ID" required />
+                        </div>
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label class="col-sm-3 control-label" for="imageSrc">Image Source</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="imageSrc" name="Source" ng-model="buyerImages.newImage.Src" required/>
+                        </div>
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label class="col-sm-3 control-label" for="imageTitle">Image Title</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="imageTitle" name="Title" placeholder="(Optional)" ng-model="buyerImages.newImage.Title"/>
+                        </div>
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label class="col-sm-3 control-label" for="imageSubtitle">Image Subtitle</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="imageSubtitle" name="Subtitle" placeholder="(Optional)" ng-model="buyerImages.newImage.SubText"/>
+                        </div>
+                    </fieldset>
+                    <div class="form-group">
+                        <div class="col-sm-offset-3 col-sm-9">
+                            <button class="btn btn-block btn-primary" cg-busy="buyer.loading" ng-disabled="buyerImages.$invalid" type="submit">Save Changes</button>
+                        </div>
+                        <div class="col-sm-offset-3 col-sm-9">
+                            <hr>
+                            <button class="btn btn-block btn-danger" type="button" ng-click="buyerImages.deleteBuyer()"><i class="fa fa-trash-o"></i> Delete Image</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
