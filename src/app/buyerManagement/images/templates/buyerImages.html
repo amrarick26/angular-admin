@@ -1,59 +1,102 @@
 <header class="l-page-header">
     <h3 class="l-page-header__title">
-        Images
+        Carousel Slides
     </h3>
     <!--====== CREATE ======-->
     <div class="l-page-header__btns" oc-if-roles="CostCenterAdmin">
-        <button type="button" ng-disabled="buyerImages.images.Items.length >= 7" class="btn btn-primary btn-block" ng-click="buyerImages.uploadImage()"><i class="fa fa-plus-circle"></i>
-            New Image
+        <button type="button" ng-disabled="buyerImages.imageData.Items.length >= 7" class="btn btn-primary btn-block" ng-click="buyerImages.uploadImage()"><i class="fa fa-plus-circle"></i>
+            New Slide
         </button>
     </div>
 </header>
-
-
 <div cg-busy="buyerImages.searchLoading">
-    <div class="no-matches" ng-if="!buyerImages.images.Items.length">
+    <div class="no-matches" ng-if="!buyerImages.imageData.Items.length">
         <b>No matches found.</b>
         <b>This buyer organization does not have any images.</b>
     </div>
-    <div ng-if="buyerImages.images.Items.length">
+    <div ng-if="buyerImages.imageData.Items.length">
         <div class="row">
             <div class="col-md-6">
                 <oc-carousel buyer="buyerImages.buyer"></oc-carousel>
             </div>
             <div class="col-md-6">
-                <form name="buyerImages.form" class="form-horizontal" ng-submit="buyerImages.submit()" autocomplete="off" novalidate oc-pretty-submit>
+                <form name="buyerImages.form" class="form-horizontal" ng-submit="buyerImages.updateImage()" autocomplete="off" novalidate oc-pretty-submit>
                     <fieldset class="form-group">
-                        <label class="col-sm-3 control-label" for="imageID">Image ID</label>
+                        <label class="col-sm-3 control-label" for="imageID">Slide ID</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="imageID" name="ID" pattern="([A-Za-z0-9\-\_]+)" pattern-err-type="ID_Name" ng-model="buyerImages.newImage.ID" required />
+                            <input type="text" class="form-control" id="imageID" name="ID" pattern="([A-Za-z0-9\-\_]+)" pattern-err-type="ID_Name" ng-model="buyerImages.imageData.ID" required />
                         </div>
                     </fieldset>
                     <fieldset class="form-group">
                         <label class="col-sm-3 control-label" for="imageSrc">Image Source</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="imageSrc" name="Source" ng-model="buyerImages.newImage.Src" required/>
+                            <input type="text" class="form-control" id="imageSrc" name="Source" ng-model="buyerImages.imageData.Src" required/>
                         </div>
                     </fieldset>
                     <fieldset class="form-group">
-                        <label class="col-sm-3 control-label" for="imageTitle">Image Title</label>
+                        <label class="col-sm-3 control-label" for="imageTitle">Slide Title</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="imageTitle" name="Title" placeholder="(Optional)" ng-model="buyerImages.newImage.Title"/>
+                            <input type="text" class="form-control" id="imageTitle" name="Title" placeholder="(Optional)" ng-model="buyerImages.imageData.Title"/>
                         </div>
                     </fieldset>
                     <fieldset class="form-group">
-                        <label class="col-sm-3 control-label" for="imageSubtitle">Image Subtitle</label>
+                        <label class="col-sm-3 control-label" for="imageSubtitle">Slide Subtitle</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="imageSubtitle" name="Subtitle" placeholder="(Optional)" ng-model="buyerImages.newImage.SubText"/>
+                            <input type="text" class="form-control" id="imageSubtitle" name="Subtitle" placeholder="(Optional)" ng-model="buyerImages.imageData.SubText"/>
                         </div>
                     </fieldset>
                     <div class="form-group">
                         <div class="col-sm-offset-3 col-sm-9">
-                            <button class="btn btn-block btn-primary" cg-busy="buyer.loading" ng-disabled="buyerImages.$invalid" type="submit">Save Changes</button>
+                            <button class="btn btn-block btn-primary" cg-busy="buyerImages.searchLoading" ng-disabled="buyerImages.$invalid" type="submit">Save Changes</button>
                         </div>
                         <div class="col-sm-offset-3 col-sm-9">
                             <hr>
                             <button class="btn btn-block btn-danger" type="button" ng-click="buyerImages.deleteBuyer()"><i class="fa fa-trash-o"></i> Delete Image</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-md-6">
+                <h3 class="l-page-header__title">
+                    Carousel Settings
+                </h3>
+                <form name="buyerImagesSettings.form" class="form-horizontal" ng-submit="buyerImages.updateSettings()" autocomplete="off" novalidate oc-pretty-submit>
+                    <div class="form-group">
+                        <div class="col-sm-offset-3 col-sm-9">
+                            <div class="checkbox">
+                                <label for="carouselNoWrap">
+                                    <input id="carouselNoWrap" name="NoWrap" type="checkbox" ng-model="buyerImages.infiniteLoop"/>
+                                    Infinite Loop
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-3 col-sm-9">
+                            <div class="checkbox">
+                                <label for="carouselAutoPlay">
+                                    <input id="carouselAutoPlay" name="AutoPlay" type="checkbox" ng-model="buyerImages.imageData.AutoPlay"/>
+                                    AutoPlay
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <fieldset class="form-group">
+                        <label class="col-sm-3 control-label" for="carouselInterval">
+                            Interval
+                            <br>
+                            <small class="text-muted">(milliseconds)</small>
+                        </label>
+                        <div class="col-sm-9">
+                            <input type="number" class="form-control" id="carouselInterval" name="Interval" ng-model="buyerImages.imageData.Interval" ng-disabled="!buyerImages.imageData.AutoPlay" ng-required="buyerImages.imageData.AutoPlay"/>
+                        </div>
+                    </fieldset>
+                    <div class="form-group">
+                        <div class="col-sm-offset-3 col-sm-9">
+                            <button class="btn btn-block btn-primary" cg-busy="buyerImages.searchLoading" type="submit">Save Changes</button>
                         </div>
                     </div>
                 </form>

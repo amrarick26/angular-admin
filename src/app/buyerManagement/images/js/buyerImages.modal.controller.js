@@ -2,7 +2,7 @@ angular.module('orderCloud')
     .controller('BuyerImagesCreateModalCtrl', BuyerImagesCreateModalController)
 ;
 
-function BuyerImagesCreateModalController(OrderCloudSDK, $uibModalInstance, $state, toastr, SelectedBuyer) {
+function BuyerImagesCreateModalController(OrderCloudSDK, $uibModalInstance, toastr, SelectedBuyer) {
     var vm = this;
 
     vm.buyer = SelectedBuyer;
@@ -17,7 +17,6 @@ function BuyerImagesCreateModalController(OrderCloudSDK, $uibModalInstance, $sta
             .then(function() {
                 toastr.success('Image has been added to ' + vm.buyer.Name + '\'s carousel', 'Success');
                 $uibModalInstance.dismiss();
-                // $state.go('buyerImages', {buyerid: vm.buyer.ID}, {reload: true});
             })
     }
 
