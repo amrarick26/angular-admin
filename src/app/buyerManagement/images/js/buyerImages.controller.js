@@ -18,10 +18,9 @@ function BuyerImagesController($scope, OrderCloudSDK, SelectedBuyer, ocBuyerImag
     $scope.$watch(function() {
         return vm.buyer.slideData;
     }, function(newIndex, oldIndex) {
-        console.log('index', newIndex);
         if (Number.isFinite(newIndex) && newIndex !== oldIndex) {
             vm.index = newIndex;
-            vm.buyer.slideData = vm.buyer.xp.Images.Items[newIndex]; 
+            vm.buyer.slideData = vm.buyer.xp.Images.Items[newIndex];
             return vm.buyer.slideData;
         }
     });
