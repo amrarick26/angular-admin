@@ -15,15 +15,14 @@ function ocCarouselDirective($compile) {
                 scope.noWrapSlides = imageData.NoWrap;
                 scope.$watch('active', function(newIndex, oldIndex) {
                     if (Number.isFinite(newIndex) && newIndex !== oldIndex) {
-                        scope.buyer.ActiveIndex = newIndex;
-                        console.log('directive: ', scope.buyer.ActiveIndex);
+                        scope.buyer.slideData = newIndex;
                     }
                 });
                 scope.active = 0;
-                scope.buyer.ActiveIndex = scope.active;
+                scope.buyer.slideData = scope.active;
                 element.html(
                     "<uib-carousel active='active' interval='interval' no-wrap='noWrapSlides'>" +
-                        "<uib-slide ng-init='buyer.ActiveIndex = $index' ng-repeat='slide in buyer.xp.Images.Items track by slide.ID' index='$index'>" +
+                        "<uib-slide ng-init='buyer.slideData = $index' ng-repeat='slide in buyer.xp.Images.Items track by slide.ID' index='$index'>" +
                             "<img class='img-responsive' ng-src='{{slide.Src}}'>" +
                             "<div class='carousel-caption'>" +
                                 "<h4>Slide {{slide.ID}}</h4>" +
