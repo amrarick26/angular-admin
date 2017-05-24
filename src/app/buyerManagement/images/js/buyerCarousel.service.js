@@ -1,17 +1,17 @@
 angular.module('orderCloud')
-    .factory('ocBuyerImages', ocBuyerImagesService)
+    .factory('ocBuyerCarousel', ocBuyerCarouselService)
 ;
 
-function ocBuyerImagesService($uibModal) {
+function ocBuyerCarouselService($uibModal) {
     var service = {
         Upload : _upload
     }
 
     function _upload(buyer) {
         return $uibModal.open({
-            templateUrl: 'buyerManagement/images/templates/buyerImagesCreate.modal.html',
-            controller: 'BuyerImagesCreateModalCtrl',
-            controllerAs: 'buyerImagesCreate',
+            templateUrl: 'buyerManagement/images/templates/buyerCarouselCreate.modal.html',
+            controller: 'BuyerCarouselCreateModalCtrl',
+            controllerAs: 'buyerCarouselCreate',
             resolve: {
                 SelectedBuyer: function() {
                     return buyer;

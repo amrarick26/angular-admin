@@ -218,8 +218,8 @@ function OrderCloudNavItemsService(ocRoles) {
             },
             {
                 icon: 'fa-image',
-                state: 'buyerImages',
-                name: 'Images',
+                state: 'buyerCarousel',
+                name: 'Carousel',
                 roles: {
                     Items: ['BuyerRoles'],
                     Any: false

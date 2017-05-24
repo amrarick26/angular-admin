@@ -1,8 +1,8 @@
 angular.module('orderCloud')
-    .controller('BuyerImagesCtrl', BuyerImagesController)
+    .controller('BuyerCarouselCtrl', BuyerCarouselController)
 ;
 
-function BuyerImagesController($scope, OrderCloudSDK, SelectedBuyer, ocBuyerImages, toastr) {
+function BuyerCarouselController($scope, $state, OrderCloudSDK, SelectedBuyer, ocBuyerCarousel, toastr) {
     var vm = this;
 
     vm.buyer = SelectedBuyer;
@@ -50,6 +50,7 @@ function BuyerImagesController($scope, OrderCloudSDK, SelectedBuyer, ocBuyerImag
             }
         }).then(function(data) {
                 toastr.success('Slide has been removed', 'Success');
+                $state.go('buyerCarousel', {buyerid: vm.buyer.ID}, {reload: true});
             });
     }
 

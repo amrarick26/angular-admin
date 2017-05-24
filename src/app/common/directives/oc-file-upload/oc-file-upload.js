@@ -35,10 +35,23 @@ function ordercloudFileUpload($parse, ocFileReader, ocFilesService) {
         function afterSelection(file, fileName) {
             ocFilesService.Upload(file, fileName)
                 .then(function(fileData) {
-                    if (!scope.model.xp) scope.model.xp = {};
-                    scope.model.xp.image = {};
-                    scope.model.xp.image.URL = fileData.Location;
-                    if (scope.patch) scope.patch({xp: scope.model.xp});
+                    if (scope.model.buyer) {
+                        if (!scope.model.buyer.xp) scope.model.buyer.xp = {
+                            Slides: {
+                                Interval: 5000,
+                                NoWrap: false,
+                                AutoPlay: true,
+                                Items: []
+                            }
+                        };
+                        scope.model.buyer.xp.Slides.Items[scope.model.index].Src = fileData.Location;
+                        if (scope.patch) scope.patch({xp: scope.model.buyer.xp});
+                    } else {
+                        if (!scope.model.xp) scope.model.xp = {};
+                        scope.model.xp.image = {};
+                        scope.model.xp.image.URL = fileData.Location;
+                        if (scope.patch) scope.patch({xp: scope.model.xp});
+                    }
                 });
         }
 
