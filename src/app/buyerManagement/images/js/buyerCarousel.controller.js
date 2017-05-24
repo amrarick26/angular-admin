@@ -60,6 +60,7 @@ function BuyerCarouselController($scope, $state, OrderCloudSDK, SelectedBuyer, o
 
     function updateSettings() {
         if (!vm.settings.AutoPlay) vm.settings.Interval = null
+        vm.infiniteLoop ? vm.settings.NoWrap = false : vm.settings.NoWrap = true;
         vm.searchLoading = OrderCloudSDK.Buyers.Patch(vm.buyer.ID, {
             xp: {
                 Slides: {
