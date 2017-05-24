@@ -1,8 +1,8 @@
 angular.module('orderCloud')
-    .controller('BuyerImagesCreateModalCtrl', BuyerImagesCreateModalController)
+    .controller('BuyerCarouselCreateModalCtrl', BuyerCarouselCreateModalController)
 ;
 
-function BuyerImagesCreateModalController(OrderCloudSDK, $uibModalInstance, $state, toastr, SelectedBuyer) {
+function BuyerCarouselCreateModalController(OrderCloudSDK, $uibModalInstance, $state, toastr, SelectedBuyer) {
     var vm = this;
 
     vm.buyer = SelectedBuyer;

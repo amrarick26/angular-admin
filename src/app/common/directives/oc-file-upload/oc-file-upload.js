@@ -44,7 +44,7 @@ function ordercloudFileUpload($parse, ocFileReader, ocFilesService) {
                                 Items: []
                             }
                         };
-                        scope.model.buyer.xp.Slides.Items[scope.model.index].Src = fileData.Location;
+                        scope.model.buyer.xp.Slides.Items[scope.model.index || scope.model.buyer.xp.Slides.Items.length].Src = fileData.Location;
                         if (scope.patch) scope.patch({xp: scope.model.buyer.xp});
                     } else {
                         if (!scope.model.xp) scope.model.xp = {};

@@ -6,14 +6,14 @@ function BuyerCarouselController($scope, $state, OrderCloudSDK, SelectedBuyer, o
     var vm = this;
 
     vm.buyer = SelectedBuyer;
-    vm.settings = vm.buyer.xp.Slides;
+    vm.settings = vm.buyer.xp && vm.buyer.xp.Slides ? vm.buyer.xp.Slides : null;
     vm.index = 0;
-    vm.buyer.slideData = vm.buyer.xp.Slides.Items[vm.index];
-    vm.infiniteLoop = vm.settings.NoWrap ? vm.infiniteLoop = false : vm.infiniteLoop = true; //If NoWrap is set to true, it will not loop
+    vm.buyer.slideData = vm.buyer.xp && vm.buyer.xp.Slides ? vm.buyer.xp.Slides.Items[vm.index]: null;
+    if (vm.settings) vm.infiniteLoop = vm.settings.NoWrap ? vm.infiniteLoop = false : vm.infiniteLoop = true; //If NoWrap is set to true, it will not loop
 
     vm.updateSlide = updateSlide; //updates data on a specific image
     vm.deleteSlide = deleteSlide;
-    vm.uploadImage = uploadImage;
+    vm.uploadSlide = uploadSlide;
     vm.updateSettings = updateSettings; //updates general carousel settings
 
     $scope.$watch(function() {
@@ -54,8 +54,8 @@ function BuyerCarouselController($scope, $state, OrderCloudSDK, SelectedBuyer, o
             });
     }
 
-    function uploadImage() {
-        ocBuyerImages.Upload(vm.buyer);
+    function uploadSlide() {
+        ocBuyerCarousel.Upload(vm.buyer);
     }
 
     function updateSettings() {
@@ -68,6 +68,8 @@ function BuyerCarouselController($scope, $state, OrderCloudSDK, SelectedBuyer, o
                     Interval: vm.settings.Interval
                 }
             }
+        }).then(function() {
+            toastr.success('Carousel settings updated', 'Success');
         })
     }
 }
