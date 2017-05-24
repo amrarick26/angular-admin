@@ -6,8 +6,9 @@ function BuyerImagesController($scope, OrderCloudSDK, SelectedBuyer, ocBuyerImag
     var vm = this;
 
     vm.buyer = SelectedBuyer;
+    vm.settings = vm.buyer.xp.Slides;
     vm.index = 0;
-    vm.settings = vm.buyer.xp.Images;
+    vm.buyer.slideData = vm.buyer.xp.Slides.Items[vm.index];
     vm.infiniteLoop = vm.settings.NoWrap ? vm.infiniteLoop = false : vm.infiniteLoop = true; //If NoWrap is set to true, it will not loop
 
     vm.updateSlide = updateSlide; //updates data on a specific image
@@ -16,34 +17,35 @@ function BuyerImagesController($scope, OrderCloudSDK, SelectedBuyer, ocBuyerImag
     vm.updateSettings = updateSettings; //updates general carousel settings
 
     $scope.$watch(function() {
-        return vm.buyer.slideData;
+        return vm.index;
     }, function(newIndex, oldIndex) {
         if (Number.isFinite(newIndex) && newIndex !== oldIndex) {
             vm.index = newIndex;
-            vm.buyer.slideData = vm.buyer.xp.Images.Items[newIndex];
-            return vm.buyer.slideData;
+            vm.buyer.slideData = vm.buyer.xp.Slides.Items[vm.index];
+        } else {
+            angular.noop();
         }
     });
 
     function updateSlide() {
-        vm.buyer.xp.Images.Items[vm.index] = vm.buyer.slideData;
+        vm.buyer.xp.Slides.Items[vm.index] = vm.buyer.slideData;
         vm.searchLoading = OrderCloudSDK.Buyers.Patch(vm.buyer.ID, {
             xp: {
-                Images: {
-                    Items: vm.buyer.xp.Images.Items
+                Slides: {
+                    Items: vm.buyer.xp.Slides.Items
                 }
             }
         }).then(function(data) {
-                toastr.success('Slide ' + vm.buyer.xp.Images.Items[vm.index].ID  + ' has been updated', 'Success');
+                toastr.success('Slide ' + vm.buyer.xp.Slides.Items[vm.index].ID  + ' has been updated', 'Success');
             });
     }
 
     function deleteSlide() {
-        vm.buyer.xp.Images.Items.splice(vm.index, 1);
+        vm.buyer.xp.Slides.Items.splice(vm.index, 1);
         vm.searchLoading = OrderCloudSDK.Buyers.Patch(vm.buyer.ID, {
             xp: {
-                Images: {
-                    Items: vm.buyer.xp.Images.Items
+                Slides: {
+                    Items: vm.buyer.xp.Slides.Items
                 }
             }
         }).then(function(data) {
@@ -59,7 +61,7 @@ function BuyerImagesController($scope, OrderCloudSDK, SelectedBuyer, ocBuyerImag
         if (!vm.settings.AutoPlay) vm.settings.Interval = null
         vm.searchLoading = OrderCloudSDK.Buyers.Patch(vm.buyer.ID, {
             xp: {
-                Images: {
+                Slides: {
                     AutoPlay: vm.settings.AutoPlay,
                     NoWrap: vm.settings.NoWrap,
                     Interval: vm.settings.Interval

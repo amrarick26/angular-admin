@@ -10,11 +10,11 @@
     </div>
 </header>
 <div cg-busy="buyerImages.searchLoading">
-    <div class="no-matches" ng-if="!buyerImages.buyer.xp.Images.Items.length">
+    <div class="no-matches" ng-if="!buyerImages.buyer.xp.Slides.Items.length">
         <b>No matches found.</b>
         <b>This buyer organization does not have any images.</b>
     </div>
-    <div ng-if="buyerImages.buyer.xp.Images.Items.length">
+    <div ng-if="buyerImages.buyer.xp.Slides.Items.length">
         <div class="row">
             <div class="col-md-6">
                 <oc-carousel buyer="buyerImages.buyer"></oc-carousel>
