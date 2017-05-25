@@ -4,22 +4,22 @@
     </h3>
     <!--====== CREATE ======-->
     <div class="l-page-header__btns" oc-if-roles="CostCenterAdmin">
-        <button type="button" ng-disabled="buyerCarouselCtrl.settings.Items.length >= 7" class="btn btn-primary btn-block" ng-click="buyerCarouselCtrl.uploadImage()"><i class="fa fa-plus-circle"></i>
+        <button type="button" ng-disabled="buyerCarouselCtrl.buyer.xp.Slides.Items.length >= 7" class="btn btn-primary btn-block" ng-click="buyerCarouselCtrl.uploadSlide()"><i class="fa fa-plus-circle"></i>
             New Slide
         </button>
     </div>
 </header>
 <div cg-busy="buyerCarouselCtrl.searchLoading">
-    <div class="no-matches" ng-if="!buyerCarouselCtrl.buyer.xp.Slides.Items.length">
+    <div class="no-matches" ng-if="!buyerCarouselCtrl.buyer.xp || !buyerCarouselCtrl.buyer.xp.Slides || !buyerCarouselCtrl.buyer.xp.Slides.Items || !buyerCarouselCtrl.buyer.xp.Slides.Items.length">
         <b>No matches found.</b>
         <b>This buyer organization does not have any images.</b>
     </div>
-    <div ng-if="buyerCarouselCtrl.buyer.xp.Slides.Items.length">
+    <div ng-if="buyerCarouselCtrl.buyer.xp && buyerCarouselCtrl.buyer.xp.Slides && buyerCarouselCtrl.buyer.xp.Slides.Items && buyerCarouselCtrl.buyer.xp.Slides.Items.length">
         <div class="row">
             <div class="col-md-6">
                 <oc-carousel buyer="buyerCarouselCtrl.buyer"></oc-carousel>
                 <br>
-                <small class="text-muted">For optimal results, please use images at least 1020px wide, and images with consistent height values.</small> 
+                <small class="text-muted">For optimal results, please use images at least 1020px wide and with consistent height values.</small> 
             </div>
             <div class="col-md-6">
                 <form name="buyerCarouselCtrl.form" class="form-horizontal" ng-submit="buyerCarouselCtrl.updateSlide()" autocomplete="off" novalidate oc-pretty-submit>
@@ -50,12 +50,12 @@
                     <fieldset class="form-group">
                         <label for="orderCloudUpload" class="col-sm-3 control-label">Upload Images</label>
                         <div class="col-sm-9">
-                            <oc-file-upload model="buyerCarouselCtrl" keyname="slideImage" extensions="jpg, png, gif, jpeg, tiff"></oc-file-upload>
+                            <oc-file-upload file-upload-object="buyerCarouselCtrl" file-upload-options="buyerCarouselCtrl.fileUploadOptions" on-update="buyerCarouselCtrl.updateSlide(src)"></oc-file-upload>
                         </div>
                     </fieldset>
                     <div class="form-group">
                         <div class="col-sm-offset-3 col-sm-9">
-                            <button class="btn btn-block btn-primary" cg-busy="buyerCarouselCtrl.searchLoading" ng-disabled="buyerCarouselCtrl.$invalid" type="submit">Save Changes</button>
+                            <button class="btn btn-block btn-primary" cg-busy="buyerCarouselCtrl.searchLoading" ng-disabled="buyerCarouselCtrl.$invalid || (buyerCarouselCtrl.$invalid && buyerCarouselCtrl.disabled)" type="submit">Save Changes</button>
                         </div>
                         <div class="col-sm-offset-3 col-sm-9">
                             <hr>

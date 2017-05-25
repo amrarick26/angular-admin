@@ -1,15 +1,29 @@
 angular.module('orderCloud')
-    .controller('BuyerImagesCreateModalCtrl', BuyerImagesCreateModalController)
+    .controller('BuyerCarouselCreateModalCtrl', BuyerCarouselCreateModalController)
 ;
 
-function BuyerImagesCreateModalController(OrderCloudSDK, $uibModalInstance, $state, toastr, SelectedBuyer) {
+function BuyerCarouselCreateModalController(OrderCloudSDK, $uibModalInstance, $state, toastr, SelectedBuyer) {
     var vm = this;
 
     vm.buyer = SelectedBuyer;
     vm.newImage = {};
 
+    vm.addImage = addImage;
     vm.submit = submit;
     vm.cancel = cancel;
+
+    vm.fileUploadOptions = {
+        keyname: 'Slides',
+        folder: null,
+        extensions: 'jpg, png, gif, jpeg, tiff, svg',
+        invalidExtensions: null,
+        uploadText: 'Upload an image',
+        onUpdate: addImage
+    };
+
+    function addImage(imageSource){
+        vm.newImage.Src = imageSource;
+    }
 
     function submit() {
         vm.buyer.xp.Slides.Items.push(vm.newImage);

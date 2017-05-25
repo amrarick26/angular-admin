@@ -2,32 +2,37 @@ angular.module('orderCloud')
     .controller('BuyerCarouselCtrl', BuyerCarouselController)
 ;
 
-function BuyerCarouselController($scope, $state, OrderCloudSDK, SelectedBuyer, ocBuyerCarousel, toastr) {
+function BuyerCarouselController($state, $rootScope, OrderCloudSDK, SelectedBuyer, ocBuyerCarousel, toastr) {
     var vm = this;
 
     vm.buyer = SelectedBuyer;
-    vm.settings = vm.buyer.xp.Slides;
-    vm.index = 0;
-    vm.buyer.slideData = vm.buyer.xp.Slides.Items[vm.index];
-    vm.infiniteLoop = vm.settings.NoWrap ? vm.infiniteLoop = false : vm.infiniteLoop = true; //If NoWrap is set to true, it will not loop
+    vm.disabled = true;
+    vm.settings = vm.buyer.xp && vm.buyer.xp.Slides ? vm.buyer.xp.Slides : null;
+    vm.index;
+    vm.buyer.slideData = vm.buyer.xp && vm.buyer.xp.Slides ? vm.buyer.xp.Slides.Items[vm.index]: null;
+    if (vm.settings) vm.infiniteLoop = vm.settings.NoWrap ? vm.infiniteLoop = false : vm.infiniteLoop = true; //If NoWrap is set to true, it will not loop
+
+    vm.fileUploadOptions = {
+        keyname: 'Slides',
+        folder: null,
+        extensions: 'jpg, png, gif, jpeg, tiff, svg',
+        invalidExtensions: null,
+        uploadText: 'Upload an image',
+        onUpdate: vm.updateSlide
+    };
 
     vm.updateSlide = updateSlide; //updates data on a specific image
     vm.deleteSlide = deleteSlide;
-    vm.uploadImage = uploadImage;
+    vm.uploadSlide = uploadSlide;
     vm.updateSettings = updateSettings; //updates general carousel settings
 
-    $scope.$watch(function() {
-        return vm.index;
-    }, function(newIndex, oldIndex) {
-        if (Number.isFinite(newIndex) && newIndex !== oldIndex) {
-            vm.index = newIndex;
-            vm.buyer.slideData = vm.buyer.xp.Slides.Items[vm.index];
-        } else {
-            angular.noop();
-        }
+    $rootScope.$on('OC:CarouselIndexChange', function(event, index) {
+        vm.index = index;
+        vm.buyer.slideData = vm.buyer.xp.Slides.Items[vm.index];
     });
 
-    function updateSlide() {
+    function updateSlide(imageSource) {
+        if (imageSource) vm.buyer.xp.Slides.Items[vm.index].Src = imageSource;
         vm.buyer.xp.Slides.Items[vm.index] = vm.buyer.slideData;
         vm.searchLoading = OrderCloudSDK.Buyers.Patch(vm.buyer.ID, {
             xp: {
@@ -54,12 +59,13 @@ function BuyerCarouselController($scope, $state, OrderCloudSDK, SelectedBuyer, o
             });
     }
 
-    function uploadImage() {
-        ocBuyerImages.Upload(vm.buyer);
+    function uploadSlide() {
+        ocBuyerCarousel.Upload(vm.buyer);
     }
 
     function updateSettings() {
         if (!vm.settings.AutoPlay) vm.settings.Interval = null
+        vm.infiniteLoop ? vm.settings.NoWrap = false : vm.settings.NoWrap = true;
         vm.searchLoading = OrderCloudSDK.Buyers.Patch(vm.buyer.ID, {
             xp: {
                 Slides: {
@@ -68,6 +74,8 @@ function BuyerCarouselController($scope, $state, OrderCloudSDK, SelectedBuyer, o
                     Interval: vm.settings.Interval
                 }
             }
+        }).then(function() {
+            toastr.success('Carousel settings updated', 'Success');
         })
     }
 }

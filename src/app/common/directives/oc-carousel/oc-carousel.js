@@ -2,7 +2,7 @@ angular.module('orderCloud')
     .directive('ocCarousel', ocCarouselDirective)
 ;
 
-function ocCarouselDirective($compile, $templateRequest) {
+function ocCarouselDirective($compile, $templateRequest, $rootScope) {
     return {
         scope: {
             buyer: '='
@@ -16,6 +16,7 @@ function ocCarouselDirective($compile, $templateRequest) {
                 scope.$watch('active', function(newIndex, oldIndex) {
                     if (Number.isFinite(newIndex) && newIndex !== oldIndex) {
                         scope.buyer.slideData = scope.buyer.xp.Slides.Items[newIndex];
+                        $rootScope.$broadcast('OC:CarouselIndexChange', newIndex);  
                     } else {
                         scope.buyer.slideData = scope.buyer.xp.Slides.Items[0];
                     }

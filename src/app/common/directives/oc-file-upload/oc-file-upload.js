@@ -6,7 +6,8 @@ function ordercloudFileUpload($parse, OrderCloudSDK, ocFileReader, ocFilesServic
     var directive = {
         scope: {
             fileUploadObject: '=',
-            fileUploadOptions: '='
+            fileUploadOptions: '=',
+            onUpdate: '&'
         },
         restrict: 'E',
         templateUrl: 'common/directives/oc-file-upload/oc-file-upload.html',
@@ -43,11 +44,28 @@ function ordercloudFileUpload($parse, OrderCloudSDK, ocFileReader, ocFilesServic
         function afterSelection(file, folder) {
             ocFilesService.Upload(file, folder)
                 .then(function(fileData) {
-                    if (!scope.fileUploadObject.xp) scope.fileUploadObject.xp = {};
-                    scope.fileUploadObject.xp[scope.fileUploadOptions.keyname || 'image'] = {};
-                    scope.fileUploadObject.xp[scope.fileUploadOptions.keyname || 'image'].URL = fileData.Location;
-                    if (scope.fileUploadOptions.onUpdate && (typeof scope.fileUploadOptions.onUpdate == 'function')) scope.fileUploadOptions.onUpdate(scope.fileUploadObject.xp);
-                });
+                    if(scope.fileUploadOptions.keyname === 'Slides') {
+                        var key = scope.fileUploadOptions.keyname,
+                            location = scope.fileUploadObject.index,
+                            buyer = scope.fileUploadObject.buyer;
+                        if (location >= 0) {
+                            if (!buyer.xp) buyer.xp = {};
+                            if (!buyer.xp[key].Items[location]) buyer.xp[key].Items[location] = {};
+                            buyer.xp[key].Items[location].Src = fileData.Location;
+                            if (scope.onUpdate && (typeof scope.onUpdate == 'function')) scope.onUpdate({src: buyer.xp[key].Items[location].Src});
+                        }
+                        else {
+                            if (scope.onUpdate && (typeof scope.onUpdate == 'function')) scope.onUpdate({src: fileData.Location});
+                        }
+                    } else {
+                        if (!scope.fileUploadObject.xp) scope.fileUploadObject.xp = {};
+                        scope.fileUploadObject.xp[scope.fileUploadOptions.keyname || 'image'] = {};
+                        scope.fileUploadObject.xp[scope.fileUploadOptions.keyname || 'image'].URL = fileData.Location;
+                        if (scope.fileUploadOptions.onUpdate && (typeof scope.fileUploadOptions.onUpdate == 'function')) scope.fileUploadOptions.onUpdate({src: scope.fileUploadObject.xp});
+                    }
+                }).catch(function(ex) {
+                    console.log(ex);
+                })
         }
 
         var allowed = {
