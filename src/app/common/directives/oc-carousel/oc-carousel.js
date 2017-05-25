@@ -12,7 +12,7 @@ function ocCarouselDirective($compile, $templateRequest, $rootScope) {
             if(scope.buyer.xp && scope.buyer.xp.Slides && scope.buyer.xp.Slides.Items.length) {
                 var imageData = scope.buyer.xp.Slides;
                 scope.interval = null;
-                scope.noWrapSlides = imageData.NoWrap;
+                scope.noWrapSlides = false;
                 scope.$watch('active', function(newIndex, oldIndex) {
                     if (Number.isFinite(newIndex) && newIndex !== oldIndex) {
                         scope.buyer.slideData = scope.buyer.xp.Slides.Items[newIndex];

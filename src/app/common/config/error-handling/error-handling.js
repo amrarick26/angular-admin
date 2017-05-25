@@ -6,6 +6,7 @@ angular.module('orderCloud')
             ocMatchPassword: 'Passwords do not match.',
             positiveInteger: 'Please enter a positive integer',
             ID_Name: 'Only Alphanumeric characters, hyphens and underscores are allowed',
+            SLIDE_Interval: 'Interval measured in milliseconds, please enter number greater than 1000',
             noSpecialChars: 'Only Alphanumeric characters are allowed',
             'UnavailableID': 'This ID is already in use.',
             'User.UsernameMustBeUnique': 'This username is already in use.',

@@ -6,6 +6,7 @@ function BuyerCarouselController($state, $rootScope, OrderCloudSDK, SelectedBuye
     var vm = this;
 
     vm.buyer = SelectedBuyer;
+    vm.buyerCopy = angular.copy(SelectedBuyer);
     vm.disabled = true;
     vm.settings = vm.buyer.xp && vm.buyer.xp.Slides ? vm.buyer.xp.Slides : null;
     vm.index;
@@ -32,17 +33,22 @@ function BuyerCarouselController($state, $rootScope, OrderCloudSDK, SelectedBuye
     });
 
     function updateSlide(imageSource) {
-        if (imageSource) vm.buyer.xp.Slides.Items[vm.index].Src = imageSource;
-        vm.buyer.xp.Slides.Items[vm.index] = vm.buyer.slideData;
-        vm.searchLoading = OrderCloudSDK.Buyers.Patch(vm.buyer.ID, {
-            xp: {
-                Slides: {
-                    Items: vm.buyer.xp.Slides.Items
+        var duplicateID = _.pluck(vm.buyerCopy.xp.Slides.Items, 'ID').indexOf(vm.buyer.xp.Slides.Items[vm.index].ID) > -1;
+        if (!duplicateID) {
+            if (imageSource) vm.buyer.xp.Slides.Items[vm.index].Src = imageSource;
+            vm.buyer.xp.Slides.Items[vm.index] = vm.buyer.slideData;
+            vm.searchLoading = OrderCloudSDK.Buyers.Patch(vm.buyer.ID, {
+                xp: {
+                    Slides: {
+                        Items: vm.buyer.xp.Slides.Items
+                    }
                 }
-            }
-        }).then(function(data) {
-                toastr.success('Slide ' + vm.buyer.xp.Slides.Items[vm.index].ID  + ' has been updated', 'Success');
-            });
+            }).then(function(data) {
+                    toastr.success('Slide ' + vm.buyer.xp.Slides.Items[vm.index].ID  + ' has been updated', 'Success');
+                });
+        } else {
+            toastr.error('Slide ID already exists, please enter a unique ID', 'Error');
+        }
     }
 
     function deleteSlide() {

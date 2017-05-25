@@ -12,7 +12,7 @@
 <div cg-busy="buyerCarouselCtrl.searchLoading">
     <div class="no-matches" ng-if="!buyerCarouselCtrl.buyer.xp || !buyerCarouselCtrl.buyer.xp.Slides || !buyerCarouselCtrl.buyer.xp.Slides.Items || !buyerCarouselCtrl.buyer.xp.Slides.Items.length">
         <b>No matches found.</b>
-        <b>This buyer organization does not have any images.</b>
+        <b>This buyer organization does not have any slides.</b>
     </div>
     <div ng-if="buyerCarouselCtrl.buyer.xp && buyerCarouselCtrl.buyer.xp.Slides && buyerCarouselCtrl.buyer.xp.Slides.Items && buyerCarouselCtrl.buyer.xp.Slides.Items.length">
         <div class="row">
@@ -30,12 +30,6 @@
                         </div>
                     </fieldset>
                     <fieldset class="form-group">
-                        <label class="col-sm-3 control-label" for="imageSrc">Image Source</label>
-                        <div class="col-sm-9">
-                            <input type="text" class="form-control" id="imageSrc" name="Source" ng-model="buyerCarouselCtrl.buyer.slideData.Src" required/>
-                        </div>
-                    </fieldset>
-                    <fieldset class="form-group">
                         <label class="col-sm-3 control-label" for="imageTitle">Slide Title</label>
                         <div class="col-sm-9">
                             <input type="text" class="form-control" id="imageTitle" name="Title" placeholder="(Optional)" ng-model="buyerCarouselCtrl.buyer.slideData.Title"/>
@@ -45,6 +39,12 @@
                         <label class="col-sm-3 control-label" for="imageSubtitle">Slide Subtitle</label>
                         <div class="col-sm-9">
                             <input type="text" class="form-control" id="imageSubtitle" name="Subtitle" placeholder="(Optional)" ng-model="buyerCarouselCtrl.buyer.slideData.SubText"/>
+                        </div>
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label class="col-sm-3 control-label" for="imageSrc">Image URL</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="imageSrc" name="Source" ng-model="buyerCarouselCtrl.buyer.slideData.Src" required/>
                         </div>
                     </fieldset>
                     <fieldset class="form-group">
@@ -99,7 +99,7 @@
                             <small class="text-muted">(milliseconds)</small>
                         </label>
                         <div class="col-sm-9">
-                            <input type="number" class="form-control" id="carouselInterval" name="Interval" ng-model="buyerCarouselCtrl.settings.Interval" ng-disabled="!buyerCarouselCtrl.settings.AutoPlay" ng-required="buyerCarouselCtrl.settings.AutoPlay"/>
+                            <input type="number" class="form-control" id="carouselInterval" name="Interval" pattern="(^[1-9]\d{3,})" pattern-err-type="SLIDE_Interval" ng-model="buyerCarouselCtrl.settings.Interval" ng-disabled="!buyerCarouselCtrl.settings.AutoPlay" ng-required="buyerCarouselCtrl.settings.AutoPlay"/>
                         </div>
                     </fieldset>
                     <div class="form-group">
