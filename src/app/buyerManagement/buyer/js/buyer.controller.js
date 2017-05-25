@@ -7,6 +7,7 @@ function BuyerController($state, $exceptionHandler, toastr, OrderCloudSDK, ocBuy
     vm.selectedBuyer = SelectedBuyer;
     vm.settings = angular.copy(SelectedBuyer);
 
+    vm.patchImage = patchImage;
     vm.updateValidity = updateValidity;
     vm.updateBuyer = updateBuyer;
     vm.deleteBuyer = deleteBuyer;
@@ -20,7 +21,7 @@ function BuyerController($state, $exceptionHandler, toastr, OrderCloudSDK, ocBuy
         extensions: 'jpg, png, gif, jpeg, tiff, svg',
         invalidExtensions: null,
         uploadText: 'Upload an image',
-        onUpdate: patchImage
+        onUpdate: vm.patchImage
     };
 
     function patchImage(imageXP) {

@@ -61,7 +61,7 @@ function ordercloudFileUpload($parse, OrderCloudSDK, ocFileReader, ocFilesServic
                         if (!scope.fileUploadObject.xp) scope.fileUploadObject.xp = {};
                         scope.fileUploadObject.xp[scope.fileUploadOptions.keyname || 'image'] = {};
                         scope.fileUploadObject.xp[scope.fileUploadOptions.keyname || 'image'].URL = fileData.Location;
-                        if (scope.fileUploadOptions.onUpdate && (typeof scope.fileUploadOptions.onUpdate == 'function')) scope.fileUploadOptions.onUpdate({src: scope.fileUploadObject.xp});
+                        if (scope.fileUploadOptions.onUpdate && (typeof scope.fileUploadOptions.onUpdate == 'function')) scope.fileUploadOptions.onUpdate(scope.fileUploadObject.xp);
                     }
                 }).catch(function(ex) {
                     console.log(ex);

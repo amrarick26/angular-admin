@@ -13,7 +13,7 @@
         <fieldset class="form-group">
             <label class="col-sm-3 control-label" for="imageSrc">Image Source</label>
             <div class="col-sm-9">
-                <input type="text" class="form-control" id="imageSrc" name="Source" ng-model="buyerCarouselCreate.newImage.Src" />
+                <input type="text" class="form-control" placeholder="(Optional if uploading an image)" id="imageSrc" name="Source" ng-model="buyerCarouselCreate.newImage.Src" required/>
             </div>
         </fieldset>
         <fieldset class="form-group">
@@ -29,7 +29,7 @@
             </div>
         </fieldset>
         <fieldset class="form-group">
-            <label for="orderCloudUpload" class="col-sm-3 control-label">Upload Images</label>
+            <label for="orderCloudUpload" class="col-sm-3 control-label">Upload Image</label>
             <div class="col-sm-9">
                 <oc-file-upload file-upload-object="buyerCarouselCreate" file-upload-options="buyerCarouselCreate.fileUploadOptions" on-update="buyerCarouselCreate.addImage(src)"></oc-file-upload>
             </div>
