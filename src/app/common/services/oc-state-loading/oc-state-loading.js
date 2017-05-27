@@ -1,5 +1,5 @@
 angular.module('orderCloud')
-    .factory('ocStateLoading', function($rootScope, $ocMedia, $exceptionHandler, defaultstate, $q) {
+    .factory('ocStateLoading', function($rootScope, $exceptionHandler, defaultstate, $q, OrderCloudSDK, ocRefreshToken) {
         var stateLoading = {};
         var service = {
             Init: _init,
@@ -7,10 +7,15 @@ angular.module('orderCloud')
         };
 
         function _init() {
-            $rootScope.$on('$stateChangeStart', function(e, toState) {
-                var parent = toState.parent || toState.name.split('.')[0];
-                stateLoading[parent] = $q.defer();
-                if ($ocMedia('max-width:767px')) $('#GlobalNav').offcanvas('hide');
+            $rootScope.$on('$stateChangeStart', function(e, toState, toParams, fromState) {
+                var toParent = toState.parent || toState.name.split('.')[0];
+                var fromParent = fromState.parent || fromState.name.split('.')[0];
+                stateLoading[fromParent === toParent ? toParent : 'base'] = $q.defer();
+
+                if((!toState.data || (toState.data && !toState.data.ignoreToken)) && !OrderCloudSDK.GetToken()) {
+                    e.preventDefault();
+                    ocRefreshToken(toState.name);
+                }
             });
 
             $rootScope.$on('$stateChangeSuccess', function() {
@@ -34,7 +39,7 @@ angular.module('orderCloud')
                 if (stateLoading[key].promise && !stateLoading[key].promise.$cgBusyFulfilled) {
                     stateLoading[key].resolve();  //resolve leftover loading promises
                 }
-            })
+            });
         }
 
         return service;
