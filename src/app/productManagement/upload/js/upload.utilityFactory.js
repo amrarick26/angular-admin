@@ -1,19 +1,88 @@
 angular.module('orderCloud')
     .factory('UploadUtility', UploadUtilityService);
 
-function UploadUtilityService(OrderCloud, $q, toastr, $exceptionHandler) {
+function UploadUtilityService(OrderCloudSDK, $q, toastr, $exceptionHandler) {
     var errors = [];
     var service = {
+        newCategoryImages: _newCategoryImages,
+        cleanProductsAndPS: _cleanProductsAndPS,
         rioPricing: _rioPricing,
         cleanCatalogAssignments: _cleanCatalogAssignments, // delete all party to category assigments
         rioPartyCategory: _rioPartyCategory, //creates party to category assignment
         rioProductCategory: _rioProductCategory, //creates product to category assignment
         rioProductPartyPS: _productPartyPS,
+        patchDefaultPriceSchedule: _patchDefaultPriceSchedule,
         uploadCategoryImages: _uploadCategoryImages,
         deleteSpecialChars: _deleteSpecialChars
     };
 
+    function _newCategoryImages(file){
+        var queue = [];
+        var errors = [];
+        _.each(file, function(row){
+            queue.push(function(){
+                return OrderCloudSDK.Categories.Patch('caferio', row['Category Name'], {xp: {image: {URL: row.field2}}})
+                    .catch(function(){
+                        errors.push('Image Patch Err    ' + row['Category Name']);
+                    });
+            }());
+        });
+        return $q.all(queue)
+            .then(function(){
+                console.log(errors.join('\n'));
+                toastr.success('yay');
+            });
+    }
+
+    function _cleanCatalogAssignments(collectedErrors) {
+        //TODO: Task Order: 1 - global.1
+        //Then manually assign necessary Category.Assignments and check
+        //to make sure everything still works
+        var errors = collectedErrors || [];
+        return OrderCloudSDK.Categories.ListAssignments('caferio', {pageSize: 100})
+                .then(function(assignmentList){
+                    var queue = [];
+                    _.each(assignmentList.Items, function(a){
+                        queue.push(function(){
+                            return OrderCloudSDK.Categories.DeleteAssignment('caferio', a.CategoryID, 'caferio', {userID: a.UserID, userGroupID: a.UserGroupID})
+                                .catch(function(){
+                                    errors.push(a);
+                                });
+                        }());
+                    });
+                    return $q.all(queue)
+                        .then(function(){
+                            return assignmentList.Meta.TotalPages > 1 ? _cleanCatalogAssignments(errors) : console.log('All party-category assignments have been deleted', errors.join('\n'));
+                        });
+                });
+    }
+
+    function _cleanProductsAndPS(collectedErrors){
+        //TODO: Task Order: 2 -global.2
+        var errors = collectedErrors || [];
+        return OrderCloudSDK.PriceSchedules.List({pageSize: 100})
+            .then(function(productList){
+                var queue = [];
+                _.each(productList.Items, function(product){
+                    queue.push(function(){
+                        return OrderCloudSDK.PriceSchedules.Delete(product.ID)
+                            .catch(function(){
+                                errors.push('PS Failure:    ' + product.ID);
+                            });
+                    }());
+                });
+                return $q.all(queue)
+                    .then(function(){
+                        return productList.Meta.TotalPages > 1 ? _cleanProductsAndPS(errors) : console.log('Catalog is Clean', errors.join('\n'));
+                    })
+                    .catch(function(err){
+                        console.log(err);
+                    })
+            });
+    }
+
     function _rioPricing(assignments) {
+        //TODO: Task Order: 3 caferio.1
         createNewPS(assignments);
 
         function createNewPS(remainingAssignments) {
@@ -24,7 +93,7 @@ function UploadUtilityService(OrderCloud, $q, toastr, $exceptionHandler) {
             _.each(chunk, function(csvData) {
                 var ps = {
                     ID: 'caferio-' + csvData.product,
-                    Name: 'caferio' + csvData.product + ' - ' + csvData.Price,
+                    Name: 'caferio-' + csvData.product + ' - ' + csvData.Price,
                     ApplyTax: false,
                     ApplyShipping: false,
                     RestrictedQuantity: false,
@@ -36,7 +105,7 @@ function UploadUtilityService(OrderCloud, $q, toastr, $exceptionHandler) {
                     xp: {}
                 };
                 assignmentQueue.push((function() {
-                    return OrderCloud.PriceSchedules.Update(ps.ID, ps)
+                    return OrderCloudSDK.PriceSchedules.Update(ps.ID, ps)
                         .catch(function(ex) {
                             errors.push({
                                 PriceSchedule: ps.ID,
@@ -58,71 +127,11 @@ function UploadUtilityService(OrderCloud, $q, toastr, $exceptionHandler) {
         }
     }
 
-    function _rioPartyCategory(assignments) {
-        /* upload full category - categries not found:
-        beverageequipparts
-        dispesers
-        hoodaccessories
-        mirrors
-        mopsbuckets
-        spraybottleshold
-        */
-        var queue = [];
-        var errors = [];
-        var errorCount = 0;
-        _.each(assignments, function(csv){
-            queue.push(function(){
-                return OrderCloud.Categories.SaveAssignment({CategoryID: csv.categoryid, BuyerID: 'caferio'}, 'caferio')
-                    .catch(function(){
-                        errorCount++;
-                        errors.push(csv.categoryid);
-                    });
-            }());
-        });
-        return $q.all(queue)
-            .then(function(){
-                console.log('error count: ' + errorCount);
-                console.log(errors.join('\n'));
-                errors.length ? toastr.warning('Check Console for category IDs with errors') : toastr.success('Complete', 'Success');
-            });
-    }
-
-    function _rioProductCategory(assignments){
-        //upload category hierarchy - this is the one misssing a couple:
-        /*
-            bowlslids	321284
-            daylabels	DAY110036
-            daylabels	DAY110035
-            daylabels	DAY110034
-            daylabels	DAY110037
-            hardware	6402
-            hardware	681231
-            hardware	264091
-            stepstools	86521
-            tongs	82388
-            wirewhips	KITSMC7QEW
-        */
-        var queue = [];
-        var errors = [];
-        var errorCount = 0;
-        _.each(assignments, function(a){
-            queue.push(function(){
-                return OrderCloud.Categories.SaveProductAssignment({CategoryID: a.categoryid, ProductID: a.productid}, 'caferio')
-                    .catch(function(){
-                        errorCount++;
-                        errors.push(a.categoryid + ' - ' + a.productid);
-                    });
-            }());
-        });
-        return $q.all(queue)
-            .then(function(){
-                console.log('error count: ' + errorCount);
-                console.log(errors.join('\n'));
-                errors.length ? toastr.warning('Check Console for category IDs with errors') : toastr.success('Complete', 'Success');
-            });
-    }
-
     function _productPartyPS(assignments){
+        //TODO: Task Order: 2
+        //assigns non-cafe rio price schedules to general managers
+        //and then sets caferio price schedules as default (so they are inherited by entire buyer org)
+        //only necessary for caferio - override price - price schedule, caferio usergroup, product
         /*
             Product not found:
             264091
@@ -141,11 +150,12 @@ function UploadUtilityService(OrderCloud, $q, toastr, $exceptionHandler) {
             _.each(chunk, function(csvData) {
                 var assignmentObj = {
                     ProductID: csvData.product,
-                    PriceScheduleID: 'caferio-' + csvData.product,
+                    PriceScheduleID: csvData.product,
+                    UserGroupID: 'generalmanagers',
                     BuyerID: 'caferio'
                 };
                 assignmentQueue.push((function() {
-                    return OrderCloud.Products.SaveAssignment(assignmentObj)
+                    return OrderCloudSDK.Products.SaveAssignment(assignmentObj)
                         .catch(function(ex) {
                             errors.push({
                                 Product: assignmentObj.ProductID,
@@ -168,46 +178,71 @@ function UploadUtilityService(OrderCloud, $q, toastr, $exceptionHandler) {
         }
     }
 
-    function _cleanCatalogAssignments() {
-        return deleteChunks();
+    function _patchDefaultPriceSchedule(remainingAssignments){
+        var queue = [];
+        var errors = [];
+        _.each(remainingAssignments, function(a){
+            queue.push(function(){
+                return OrderCloudSDK.Products.Patch(a.product, {DefaultPriceScheduleID: 'caferio-' + a.product})
+                    .catch(function(){
+                        errors.push(a.product);
+                    });
+            });
+        });
+        return $q.all(queue)
+            .then(function(){
+                console.log(errors.join('\n'));
+                toastr.success('done');
+            });
+    }
 
-        function deleteChunks() {
-            var queue = [];
-            var errors = [];
-            return OrderCloud.Categories.ListAssignments(null, null, null, null, null, 100, null, 'caferio')
-                .then(function(assignmentList) {
-                    if (assignmentList.Items.length) {
-                        _.each(assignmentList.Items, function(a) {
-                            queue.push(function() {
-                                return OrderCloud.Categories.DeleteAssignment(a.CategoryID, a.UserID, a.UserGroupID, a.BuyerID, 'caferio')
-                                    .catch(function(ex) {
-                                        errors.push({
-                                            Category: a.ID,
-                                            Error: ex.data ? (ex.data.error || (ex.data.Errors ? ex.data.Errors[0].Message : ex.data)) : ex.message
-                                        });
-                                        $exceptionHandler(ex);
-                                    });
-                            }());
-                        });
-                        return $q.all(queue)
-                            .then(function(){
-                                return deleteChunks();
-                            });
-                    } else {
-                        console.log(errors);
-                        return errors.length ? toastr.warning('Check console for errors') : toastr.success('Creation Complete');
-                    }
-                });
-        }
+    function _rioProductCategory(assignments){
+        //TODO: Task Order: 2
+
+
+        //upload category hierarchy - this is the one misssing a couple:
+        /*
+            bowlslids	321284
+            daylabels	DAY110036
+            daylabels	DAY110035
+            daylabels	DAY110034
+            daylabels	DAY110037
+            hardware	6402
+            hardware	681231
+            hardware	264091
+            stepstools	86521
+            tongs	82388
+            wirewhips	KITSMC7QEW
+        */
+        var queue = [];
+        var errors = [];
+        var errorCount = 0;
+        _.each(assignments, function(a){
+            queue.push(function(){
+                return OrderCloudSDK.Categories.SaveProductAssignment('caferio', {CategoryID: a.categoryid, ProductID: a.productid})
+                    .catch(function(){
+                        errorCount++;
+                        errors.push(a.categoryid + ' - ' + a.productid);
+                    });
+            }());
+        });
+        return $q.all(queue)
+            .then(function(){
+                console.log('error count: ' + errorCount);
+                console.log(errors.join('\n'));
+                errors.length ? toastr.warning('Check Console for category IDs with errors') : toastr.success('Complete', 'Success');
+            });
     }
 
     function _uploadCategoryImages(categories){
+        //FIXME: Task Order: 3
+        //this should be done last to update category images
         var queue = [];
         var errors = [];
         _.each(categories, function(category){
             queue.push(function(){
                 var partialCat = {xp:{image:{URL:category.url}}};
-                return OrderCloud.Categories.Patch(category.categoryid, partialCat, 'caferio')
+                return OrderCloudSDK.Categories.Patch('caferio', partialCat)
                     .catch(function(err){
                         errors.push(category.categoryid);
                     });
@@ -219,7 +254,74 @@ function UploadUtilityService(OrderCloud, $q, toastr, $exceptionHandler) {
             });
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    function _rioPartyCategory(assignments) {
+        //FIXME: Not Necessary
+        //only category assignments here will be fullCatalog -> fullCatalog UserGroup and caferio -> caferio UserGroup
+        //two api calls needed just do it on your own
+
+
+        /* upload full category - categries not found:
+        beverageequipparts
+        dispesers
+        hoodaccessories
+        mirrors
+        mopsbuckets
+        spraybottleshold
+        */
+        var queue = [];
+        var errors = [];
+        var errorCount = 0;
+        _.each(assignments, function(csv){
+            queue.push(function(){
+                return OrderCloudSDK.Categories.SaveAssignment({CategoryID: csv.categoryid, BuyerID: 'caferio'}, 'caferio')
+                    .catch(function(){
+                        errorCount++;
+                        errors.push(csv.categoryid);
+                    });
+            }());
+        });
+        return $q.all(queue)
+            .then(function(){
+                console.log('error count: ' + errorCount);
+                console.log(errors.join('\n'));
+                errors.length ? toastr.warning('Check Console for category IDs with errors') : toastr.success('Complete', 'Success');
+            });
+    }
+
+
     function _deleteSpecialChars(remainingProductIDs){
+        //this won't be necessary since on create I will be removing special characters
+
 		var pageSize = 25; //keep this small so joining ids doesnt max char limit
         var chunk = _.pluck(remainingProductIDs.splice(0, pageSize), 'id');
 		var placeholder = '&' //unique character that we can replace unknown character with

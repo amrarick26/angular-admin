@@ -1,8 +1,8 @@
 {
   "appname": "DFSI Admin",
-  "clientid": "70836978-8494-4C33-9296-6BAB2E6CB1F0",
+  "clientid": "AE5F4C8E-0F07-4A46-8762-6F757FF515F4",
   "catalogid": "caferio",
-  "environment": "qa",
+  "environment": "prod",
   "defaultstate": "home",
   "html5mode": true,
   "bootswatchtheme": null,
