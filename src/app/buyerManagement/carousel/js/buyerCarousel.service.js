@@ -9,7 +9,7 @@ function ocBuyerCarouselService($uibModal) {
 
     function _upload(buyer) {
         return $uibModal.open({
-            templateUrl: 'buyerManagement/images/templates/buyerCarouselCreate.modal.html',
+            templateUrl: 'buyerManagement/carousel/templates/buyerCarouselCreate.modal.html',
             controller: 'BuyerCarouselCreateModalCtrl',
             controllerAs: 'buyerCarouselCreate',
             resolve: {
