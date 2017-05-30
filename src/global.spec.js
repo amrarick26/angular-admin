@@ -81,7 +81,15 @@ function _mockData() {
             ID: 'BUYER_ID',
             Name: 'BUYER_NAME',
             DefaultCatalogID: 'BUYER_DEFAULT_CATALOG_ID',
-            Active: true
+            Active: true,
+            xp: {
+                Slides: {
+                    Items: [],
+                    AutoPlay: true,
+                    NoWrap: false,
+                    Interval: 5000
+                }
+            }
         },
         Product: {
             ID: 'PRODUCT_ID',
