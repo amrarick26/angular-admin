@@ -1,4 +1,4 @@
-fdescribe('Component: Buyer Carousel Management', function() {
+describe('Component: Buyer Carousel Management', function() {
     var _ocBuyerCarousel;
 
     beforeEach(inject(function(ocBuyerCarousel) {
@@ -12,7 +12,7 @@ fdescribe('Component: Buyer Carousel Management', function() {
                 SelectedBuyer: mock.Buyer,
                 $scope: scope
             });
-            spyOn(oc.Buyers, 'Patch');
+            spyOn(oc.Buyers, 'Patch').and.returnValue(dummyPromise);
             spyOn(_ocBuyerCarousel, 'Upload');
         }));
         describe('updateSlide', function() {
@@ -65,13 +65,13 @@ fdescribe('Component: Buyer Carousel Management', function() {
                 SelectedBuyer: mock.Buyer,
                 $uibModalInstance: uibModalInstance
             });
-            spyOn(oc.Buyers, 'Patch');
+            spyOn(oc.Buyers, 'Patch').and.returnValue(dummyPromise);
         }));
         describe('submit', function() {
             it('should patch the buyer with the new slide data', function() {
                 buyerCarouselCreateModalCtrl.submit();
-                expect(oc.Buyers.Patch).toHaveBeenCalledWith(mock.Buyer.ID, {xp: {Slides: {Items: []}}});
-                scope.digest();
+                expect(oc.Buyers.Patch).toHaveBeenCalledWith(mock.Buyer.ID, {xp: {Slides: {Items: mock.Buyer.xp.Slides.Items}}});
+                scope.$digest();
                 expect(uibModalInstance.dismiss).toHaveBeenCalled();
             })
         });
