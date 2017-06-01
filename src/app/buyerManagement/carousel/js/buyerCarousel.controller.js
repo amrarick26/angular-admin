@@ -15,11 +15,14 @@ function BuyerCarouselController($state, $rootScope, OrderCloudSDK, SelectedBuye
 
     vm.fileUploadOptions = {
         keyname: 'Slides',
+        srcKeyname: 'Src',
+        index: vm.index,
         folder: null,
         extensions: 'jpg, png, gif, jpeg, tiff, svg',
         invalidExtensions: null,
         uploadText: 'Upload an image',
-        onUpdate: vm.updateSlide
+        onUpdate: vm.updateSlide,
+        multiple: false
     };
 
     vm.updateSlide = updateSlide; //updates data on a specific image

@@ -6,7 +6,7 @@ function BuyerCarouselConfig($stateProvider) {
     $stateProvider
         .state('buyerCarousel', {
             parent: 'buyer',
-            templateUrl: 'buyerManagement/images/templates/buyerCarousel.html',
+            templateUrl: 'buyerManagement/carousel/templates/buyerCarousel.html',
             controller: 'BuyerCarouselCtrl',
             controllerAs: 'buyerCarouselCtrl',
             url: '/carousel/',

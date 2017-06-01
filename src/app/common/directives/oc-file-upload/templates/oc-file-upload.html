@@ -8,12 +8,13 @@
                 <button type="button" 
                         id="OrderCloudFileUpload"
                         class="btn btn-default" 
-                        ng-class="{'btn-block':!fileUploadModel[fileUploadOptions.keyname || 'image'][fileUploadOptions.srcKeyname || 'URL']}" 
+                        ng-class="{'btn-block':!fileUploadModel[fileUploadOptions.keyname || 'image'][fileUploadOptions.srcKeyname || 'URL'] || !fileUploadModel[fileUploadOptions.keyname].Items[fileUploadOptions.index || 0][fileUploadOptions.srcKeyname]}" 
                         ng-click="upload()">
                         {{fileUploadModel[fileUploadOptions.keyname || 'image'][fileUploadOptions.srcKeyname || 'URL']  ? 'Replace file' : (fileUploadOptions.uploadText || 'Browse files')}}
                 </button>
             </div>
-            <input type="text" class="form-control" ng-model="fileUploadModel[fileUploadOptions.keyname || 'image'][fileUploadOptions.srcKeyname || 'URL']" placeholder="Paste a url..." ng-model-options="{debounce: 1000}" ng-change="urlChange()" ng-disabled="fileUploadModel[fileUploadOptions.keyname || 'image'].Uploaded">
+            <input type="text" class="form-control" ng-model="fileUploadModel[fileUploadOptions.keyname || 'image'][fileUploadOptions.srcKeyname || 'URL'] || fileUploadModel[fileUploadOptions.keyname].Items[fileUploadOptions.index || 0][fileUploadOptions.srcKeyname]" placeholder="Paste a url..." ng-model-options="{debounce: 1000}" ng-change="urlChange()" ng-disabled="fileUploadModel[fileUploadOptions.keyname || 'image'].Uploaded">
+                       buyer.xp.Logo.URL  buyer.xp.Slides.Items[buyer.index].Src
             <div class="input-group-btn" ng-if="fileUploadModel[fileUploadOptions.keyname || 'image'][fileUploadOptions.srcKeyname || 'URL']">
                 <button type="button" class="btn btn-danger" ng-click="removeFile()">
                     <i class="fa fa-trash"></i>
@@ -24,3 +25,5 @@
     <input class="ng-hide" name="upload" type="file" id="orderCloudUpload" />
     <span class="help-block error-msg" ng-show="invalidExtension">Invalid file type, please select another file.</span>
 </div>
+
+{{fileUploadModel[fileUploadOptions.keyname].Items[fileUploadOptions.index || 0][fileUploadOptions.srcKeyname]}}
