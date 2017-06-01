@@ -13,29 +13,26 @@ function BuyerCarouselCreateModalController(OrderCloudSDK, $uibModalInstance, $s
         NoWrap: false,
         Items: []
     };
-    vm.newImage = {};
+    vm.index = vm.buyer.xp.Slides.Items.length || 0;
 
-    vm.addImage = addImage;
     vm.submit = submit;
     vm.cancel = cancel;
 
     vm.fileUploadOptions = {
         keyname: 'Slides',
+        srcKeyname: 'Src',
+        index: vm.index,
         folder: null,
         extensions: 'jpg, png, gif, jpeg, tiff, svg',
         invalidExtensions: null,
         uploadText: 'Upload an image',
-        onUpdate: addImage
+        multiple: false,
+        modal: true
     };
-
-    function addImage(imageSource){
-        vm.newImage.Src = imageSource;
-    }
 
     function submit() {
         var duplicateID = _.pluck(vm.buyer.xp.Slides.Items, 'ID').indexOf(vm.newImage.ID) > -1;
         if(!duplicateID) {
-            vm.buyer.xp.Slides.Items.push(vm.newImage);
             return OrderCloudSDK.Buyers.Patch(vm.buyer.ID, {xp: {Slides: {Items: vm.buyer.xp.Slides.Items}}})
                 .then(function() {
                     toastr.success('Image has been added to ' + vm.buyer.Name + '\'s carousel', 'Success');

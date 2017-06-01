@@ -390,7 +390,7 @@ function OrderCloudNavItemsService(ocRoles) {
     function _filterNavItems(navItems) {
         return _.filter(navItems, function (navItem) {
             if (!navItem.roles) return true;
-            return ocRoles.UserIsAuthorized(navItem.roles.Items, navItem.roles.any);
+            return ocRoles.UserIsAuthorized(navItem.roles.Items, navItem.roles.Any);
         });
     }
 

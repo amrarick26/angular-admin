@@ -4,18 +4,30 @@
     </figure>
     <div>
         <div class="input-group">
-            <div class="input-group-btn">
+            <div class="input-group-btn" ng-if="!fileUploadModel[fileUploadOptions.keyname].Items">
                 <button type="button" 
                         id="OrderCloudFileUpload"
                         class="btn btn-default" 
-                        ng-class="{'btn-block':!fileUploadModel[fileUploadOptions.keyname || 'image'][fileUploadOptions.srcKeyname || 'URL'] || !fileUploadModel[fileUploadOptions.keyname].Items[fileUploadOptions.index || 0][fileUploadOptions.srcKeyname]}" 
+                        ng-class="{'btn-block':!fileUploadModel[fileUploadOptions.keyname || 'image'][fileUploadOptions.srcKeyname || 'URL']}" 
                         ng-click="upload()">
                         {{fileUploadModel[fileUploadOptions.keyname || 'image'][fileUploadOptions.srcKeyname || 'URL']  ? 'Replace file' : (fileUploadOptions.uploadText || 'Browse files')}}
                 </button>
             </div>
-            <input type="text" class="form-control" ng-model="fileUploadModel[fileUploadOptions.keyname || 'image'][fileUploadOptions.srcKeyname || 'URL'] || fileUploadModel[fileUploadOptions.keyname].Items[fileUploadOptions.index || 0][fileUploadOptions.srcKeyname]" placeholder="Paste a url..." ng-model-options="{debounce: 1000}" ng-change="urlChange()" ng-disabled="fileUploadModel[fileUploadOptions.keyname || 'image'].Uploaded">
-                       buyer.xp.Logo.URL  buyer.xp.Slides.Items[buyer.index].Src
-            <div class="input-group-btn" ng-if="fileUploadModel[fileUploadOptions.keyname || 'image'][fileUploadOptions.srcKeyname || 'URL']">
+            <input ng-if="!fileUploadModel[fileUploadOptions.keyname].Items" type="text" class="form-control" ng-model="fileUploadModel[fileUploadOptions.keyname || 'image'][fileUploadOptions.srcKeyname || 'URL']" placeholder="Paste a url..." ng-model-options="{debounce: 1000}" ng-change="urlChange()" ng-disabled="fileUploadModel[fileUploadOptions.keyname || 'image'].Uploaded">
+            
+            <!--USED FOR BUYER CAROUSEL LOGIC-->
+            {{fileUploadOptions.index}}
+            <div class="input-group-btn" ng-if="fileUploadModel[fileUploadOptions.keyname].Items || fileUploadModel[fileUploadOptions.keyname] == 'Slides'">
+                <button type="button" 
+                        id="OrderCloudFileUpload"
+                        class="btn btn-default" 
+                        ng-class="{'btn-block':!fileUploadModel[fileUploadOptions.keyname].Items[fileUploadOptions.index || 0][fileUploadOptions.srcKeyname]}" 
+                        ng-click="upload()">
+                        {{fileUploadModel[fileUploadOptions.keyname].Items[fileUploadOptions.index || 0][fileUploadOptions.srcKeyname]  ? 'Replace file' : (fileUploadOptions.uploadText || 'Browse files')}}
+                </button>
+            </div>
+            <input ng-if="fileUploadModel[fileUploadOptions.keyname].Items" type="text" class="form-control" ng-model="fileUploadModel[fileUploadOptions.keyname].Items[fileUploadOptions.index || 0][fileUploadOptions.srcKeyname]" placeholder="Paste a url..." ng-model-options="{debounce: 1000}" ng-change="urlChange()" ng-disabled="fileUploadModel[fileUploadOptions.keyname || 'image'].Uploaded">
+            <div class="input-group-btn" ng-if="fileUploadModel[fileUploadOptions.keyname || 'image'][fileUploadOptions.srcKeyname || 'URL'] || fileUploadModel[fileUploadOptions.keyname].Items[fileUploadOptions.index || 0][fileUploadOptions.srcKeyname]">
                 <button type="button" class="btn btn-danger" ng-click="removeFile()">
                     <i class="fa fa-trash"></i>
                 </button>
@@ -25,5 +37,3 @@
     <input class="ng-hide" name="upload" type="file" id="orderCloudUpload" />
     <span class="help-block error-msg" ng-show="invalidExtension">Invalid file type, please select another file.</span>
 </div>
-
-{{fileUploadModel[fileUploadOptions.keyname].Items[fileUploadOptions.index || 0][fileUploadOptions.srcKeyname]}}

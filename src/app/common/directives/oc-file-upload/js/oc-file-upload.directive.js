@@ -36,6 +36,7 @@ function ordercloudFileUpload($timeout, $uibModal, $ocFiles, OrderCloudSDK, ocFi
         scope.fileUploadOptions = {
             keyname: scope.fileUploadOptions.keyname || globalOptions.keyname || (scope.fileUploadOptions.multiple ? 'images' : 'image'),
             srcKeyname: scope.fileUploadOptions.srcKeyname || globalOptions.srcKeyname || (scope.fileUploadOptions.multiple ? 'Src' : 'URL'),
+            index: scope.fileUploadOptions.index || null, //used for Buyer Carousel
             folder: scope.fileUploadOptions.folder || globalOptions.folder || null,
             extensions: scope.fileUploadOptions.extensions || globalOptions.extensions || null,
             invalidExtensions: scope.fileUploadOptions.invalidExtensions || globalOptions.invalidExtensions || null,
@@ -136,14 +137,22 @@ function ordercloudFileUpload($timeout, $uibModal, $ocFiles, OrderCloudSDK, ocFi
                         if (!scope.fileUploadModel[scope.fileUploadOptions.keyname]) scope.fileUploadModel[scope.fileUploadOptions.keyname || 'images'] = {Items};
                         scope.fileUploadModel[scope.fileUploadOptions.keyname || 'images'].Items[index][scope.fileUploadOptions.srcKeyname || 'URL'] = fileData.Location;
                         scope.fileUploadModel[scope.fileUploadOptions.keyname || 'images'].Items[index].Uploaded = true;
+                    } else {
+                        if (scope.fileUploadOptions.keyname == 'Slides') {
+                            var buyerXP = scope.fileUploadModel,
+                                location = scope.fileUploadOptions.index || buyerXP.Slides.Items.length -1;
+                            if (location >= 0) {
+                                if (!buyerXP.Slides) buyerXP.Slides = {};
+                                if (!buyerXP.Slides.Items[location]) buyerXP.Slides.Items[location] = {};
+                                buyerXP.Slides.Items[location].Src = fileData.Location;
+                            }
+                        } else {
+                            if (!scope.fileUploadModel) scope.fileUploadModel = {};
+                            scope.fileUploadModel[scope.fileUploadOptions.keyname || 'image'] = {};
+                            scope.fileUploadModel[scope.fileUploadOptions.keyname || 'image'][scope.fileUploadOptions.srcKeyname || 'URL'] = fileData.Location;
+                            scope.fileUploadModel[scope.fileUploadOptions.keyname || 'image'].Uploaded = true;
+                        }
                     }
-                    else {
-                        if (!scope.fileUploadModel) scope.fileUploadModel = {};
-                        scope.fileUploadModel[scope.fileUploadOptions.keyname || 'image'] = {};
-                        scope.fileUploadModel[scope.fileUploadOptions.keyname || 'image'][scope.fileUploadOptions.srcKeyname || 'URL'] = fileData.Location;
-                        scope.fileUploadModel[scope.fileUploadOptions.keyname || 'image'].Uploaded = true;
-                    }
-
                     callOnUpdate();
                 });
         }

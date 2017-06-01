@@ -10,6 +10,7 @@ function BuyerCarouselController($state, $rootScope, OrderCloudSDK, SelectedBuye
     vm.disabled = true;
     vm.settings = vm.buyer.xp && vm.buyer.xp.Slides ? vm.buyer.xp.Slides : null;
     vm.index;
+    if(!vm.index) vm.index = 0;
     vm.buyer.slideData = vm.buyer.xp && vm.buyer.xp.Slides ? vm.buyer.xp.Slides.Items[vm.index]: null;
     if (vm.settings) vm.infiniteLoop = vm.settings.NoWrap ? vm.infiniteLoop = false : vm.infiniteLoop = true; //If NoWrap is set to true, it will not loop
 
@@ -22,7 +23,8 @@ function BuyerCarouselController($state, $rootScope, OrderCloudSDK, SelectedBuye
         invalidExtensions: null,
         uploadText: 'Upload an image',
         onUpdate: vm.updateSlide,
-        multiple: false
+        multiple: false,
+        modal: true
     };
 
     vm.updateSlide = updateSlide; //updates data on a specific image
