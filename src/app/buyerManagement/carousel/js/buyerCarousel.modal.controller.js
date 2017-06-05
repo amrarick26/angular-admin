@@ -5,7 +5,7 @@ angular.module('orderCloud')
 function BuyerCarouselCreateModalController(OrderCloudSDK, $uibModalInstance, $state, $exceptionHandler, toastr, SelectedBuyer) {
     var vm = this;
 
-    vm.buyer = SelectedBuyer;
+    vm.buyer = angular.copy(SelectedBuyer);
     vm.buyerCopy = angular.copy(SelectedBuyer);
 
     vm.index = vm.buyer.xp.Slides.Items.length || 0;
@@ -49,7 +49,7 @@ function BuyerCarouselCreateModalController(OrderCloudSDK, $uibModalInstance, $s
     }
 
     function cancel() {
-        vm.buyer.xp.Slides.Items.splice(vm.index, 1);
+        if (vm.buyer.xp.Slides.Items.length) vm.buyer.xp.Slides.Items.splice(vm.index, 1);
         $uibModalInstance.close();
     }
 }
