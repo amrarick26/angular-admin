@@ -17,7 +17,7 @@ function BuyerCarouselCreateModalController(OrderCloudSDK, $uibModalInstance, $s
     vm.fileUploadOptions = {
         keyname: 'Slides',
         srcKeyname: 'Src',
-        index: vm.index,
+        index: vm.buyer.xp.Slides.Items.length || 0,
         folder: null,
         extensions: 'jpg, png, gif, jpeg, tiff, svg',
         invalidExtensions: null,

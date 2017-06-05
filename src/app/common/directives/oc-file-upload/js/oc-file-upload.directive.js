@@ -36,7 +36,7 @@ function ordercloudFileUpload($timeout, $uibModal, $ocFiles, OrderCloudSDK, ocFi
         scope.fileUploadOptions = {
             keyname: scope.fileUploadOptions.keyname || globalOptions.keyname || (scope.fileUploadOptions.multiple ? 'images' : 'image'),
             srcKeyname: scope.fileUploadOptions.srcKeyname || globalOptions.srcKeyname || (scope.fileUploadOptions.multiple ? 'Src' : 'URL'),
-            index: scope.fileUploadOptions.index || null, //used for Buyer Carousel
+            index: scope.fileUploadOptions.index || 0, //used for Buyer Carousel
             folder: scope.fileUploadOptions.folder || globalOptions.folder || null,
             extensions: scope.fileUploadOptions.extensions || globalOptions.extensions || null,
             invalidExtensions: scope.fileUploadOptions.invalidExtensions || globalOptions.invalidExtensions || null,
@@ -107,8 +107,13 @@ function ordercloudFileUpload($timeout, $uibModal, $ocFiles, OrderCloudSDK, ocFi
                 type: 'delete'})
                 .then(function() {
                     if (!multiple) {
-                        scope.invalidExtension = false;
-                        if (scope.fileUploadModel && scope.fileUploadModel[scope.fileUploadOptions.keyname || 'image']) scope.fileUploadModel[scope.fileUploadOptions.keyname || 'image'] = null;
+                        if (scope.fileUploadOptions.keyname == 'Slides') {
+                            scope.invalidExtension = false;
+                            if (scope.fileUploadModel && scope.fileUploadModel[scope.fileUploadOptions.keyname]) scope.fileUploadModel[scope.fileUploadOptions.keyname].Items[scope.fileUploadOptions.index].Src = null;
+                        } else {
+                            scope.invalidExtension = false;
+                            if (scope.fileUploadModel && scope.fileUploadModel[scope.fileUploadOptions.keyname || 'image']) scope.fileUploadModel[scope.fileUploadOptions.keyname || 'image'] = null;
+                        }
                     }
                     else {
                         if (scope.fileUploadModel && scope.fileUploadModel[scope.fileUploadOptions.keyname || 'images'] && scope.fileUploadModel[scope.fileUploadOptions.keyname || 'images'].Items && scope.fileUploadModel[scope.fileUploadOptions.keyname || 'images'].Items[index]) {
@@ -140,7 +145,7 @@ function ordercloudFileUpload($timeout, $uibModal, $ocFiles, OrderCloudSDK, ocFi
                     } else {
                         if (scope.fileUploadOptions.keyname == 'Slides') {
                             var buyerXP = scope.fileUploadModel,
-                                location = scope.fileUploadOptions.index || buyerXP.Slides.Items.length -1;
+                                location = scope.fileUploadOptions.index;
                             if (location >= 0) {
                                 if (!buyerXP.Slides) buyerXP.Slides = {};
                                 if (!buyerXP.Slides.Items[location]) buyerXP.Slides.Items[location] = {};

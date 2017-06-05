@@ -35,7 +35,7 @@ function BuyerCarouselController($state, $scope, OrderCloudSDK, SelectedBuyer, o
         extensions: 'jpg, png, gif, jpeg, tiff, svg',
         invalidExtensions: null,
         uploadText: 'Upload an image',
-        onUpdate: vm.updateSlide,
+        onUpdate: vm.saveImage,
         multiple: false,
         modal: true
     };
@@ -50,10 +50,9 @@ function BuyerCarouselController($state, $scope, OrderCloudSDK, SelectedBuyer, o
         vm.buyer.xp.Slides.Items[vm.index].Src = model.Slides.Items[vm.index].Src
     }
 
-    function updateSlide(imageSource) {
+    function updateSlide() {
         if (vm.buyerCopy.xp.Slides.Items[vm.index].ID !== vm.buyer.xp.Slides.Items[vm.index].ID) var duplicateID = _.pluck(vm.buyerCopy.xp.Slides.Items, 'ID').indexOf(vm.buyer.xp.Slides.Items[vm.index].ID) > -1;
         if (!duplicateID) {
-            if (imageSource) vm.buyer.xp.Slides.Items[vm.index].Src = imageSource;
             vm.buyer.xp.Slides.Items[vm.index] = vm.slideData;
             vm.searchLoading = OrderCloudSDK.Buyers.Patch(vm.buyer.ID, {
                 xp: {
