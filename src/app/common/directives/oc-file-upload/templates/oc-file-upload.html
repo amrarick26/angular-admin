@@ -25,7 +25,7 @@
                         {{fileUploadModel[fileUploadOptions.keyname].Items[fileUploadOptions.index || 0][fileUploadOptions.srcKeyname]  ? 'Replace file' : (fileUploadOptions.uploadText || 'Browse files')}}
                 </button>
             </div>
-            <input ng-if="fileUploadModel[fileUploadOptions.keyname].Items" type="text" class="form-control" ng-model="fileUploadModel[fileUploadOptions.keyname].Items[fileUploadOptions.index || 0][fileUploadOptions.srcKeyname]" placeholder="Paste a url..." ng-model-options="{debounce: 1000}" ng-change="urlChange()" ng-disabled="fileUploadModel[fileUploadOptions.keyname || 'image'].Uploaded">
+            <input ng-if="fileUploadModel[fileUploadOptions.keyname].Items" type="text" class="form-control" ng-model="fileUploadModel[fileUploadOptions.keyname].Items[fileUploadOptions.index || 0][fileUploadOptions.srcKeyname]" placeholder="Paste a url..." ng-model-options="{debounce: 1000}" ng-change="urlChange()" ng-disabled="fileUploadModel[fileUploadOptions.keyname || 'image'].Uploaded" required>
             <div class="input-group-btn" ng-if="fileUploadModel[fileUploadOptions.keyname || 'image'][fileUploadOptions.srcKeyname || 'URL'] || fileUploadModel[fileUploadOptions.keyname].Items[fileUploadOptions.index || 0][fileUploadOptions.srcKeyname]">
                 <button type="button" class="btn btn-danger" ng-click="removeFile()">
                     <i class="fa fa-trash"></i>
