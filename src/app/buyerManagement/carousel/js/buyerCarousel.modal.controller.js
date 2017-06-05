@@ -7,13 +7,6 @@ function BuyerCarouselCreateModalController(OrderCloudSDK, $uibModalInstance, $s
 
     vm.buyer = SelectedBuyer;
     vm.buyerCopy = angular.copy(SelectedBuyer);
-    if (!vm.buyer.xp) vm.buyer.xp = {};
-    if (!vm.buyer.xp.Slides) vm.buyer.xp.Slides = {
-        AutoPlay: true,
-        Interval: 8000,
-        NoWrap: false,
-        Items: []
-    };
 
     vm.index = vm.buyer.xp.Slides.Items.length || 0;
 
@@ -51,7 +44,7 @@ function BuyerCarouselCreateModalController(OrderCloudSDK, $uibModalInstance, $s
     }
 
     function cancel() {
-        delete vm.buyer.xp.Slides.Items[vm.index];
+        vm.buyer.xp.Slides.Items.splice(vm.index, 1);
         $uibModalInstance.close();
     }
 }
