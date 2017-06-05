@@ -49,7 +49,6 @@ function BuyerCarouselCreateModalController(OrderCloudSDK, $uibModalInstance, $s
     }
 
     function cancel() {
-        if (vm.buyer.xp.Slides.Items.length) vm.buyer.xp.Slides.Items.splice(vm.index, 1);
         $uibModalInstance.close();
     }
 }
