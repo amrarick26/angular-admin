@@ -56,9 +56,7 @@ function BuyerCarouselController($state, $scope, OrderCloudSDK, SelectedBuyer, o
             vm.buyer.xp.Slides.Items[vm.index] = vm.slideData;
             vm.searchLoading = OrderCloudSDK.Buyers.Patch(vm.buyer.ID, {
                 xp: {
-                    Slides: {
-                        Items: vm.buyer.xp.Slides.Items
-                    }
+                    Slides: vm.buyer.xp.Slides
                 }
             }).then(function(data) {
                     toastr.success('Slide ' + vm.buyer.xp.Slides.Items[vm.index].ID  + ' has been updated', 'Success');

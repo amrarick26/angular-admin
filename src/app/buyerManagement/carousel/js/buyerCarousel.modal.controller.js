@@ -34,7 +34,7 @@ function BuyerCarouselCreateModalController(OrderCloudSDK, $uibModalInstance, $s
     function submit() {
         var duplicateID = _.pluck(vm.buyerCopy.xp.Slides.Items, 'ID').indexOf(vm.buyer.xp.Slides.Items[vm.index].ID) > -1;
         if(!duplicateID) {
-            return OrderCloudSDK.Buyers.Patch(vm.buyer.ID, {xp: {Slides: {Items: vm.buyer.xp.Slides.Items}}})
+            return OrderCloudSDK.Buyers.Patch(vm.buyer.ID, {xp: {Slides: vm.buyer.xp.Slides}})
                 .then(function() {
                     toastr.success('Image has been added to ' + vm.buyer.Name + '\'s carousel', 'Success');
                     $uibModalInstance.dismiss();
