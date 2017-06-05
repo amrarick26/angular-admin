@@ -16,7 +16,6 @@
             <input ng-if="!fileUploadModel[fileUploadOptions.keyname].Items" type="text" class="form-control" ng-model="fileUploadModel[fileUploadOptions.keyname || 'image'][fileUploadOptions.srcKeyname || 'URL']" placeholder="Paste a url..." ng-model-options="{debounce: 1000}" ng-change="urlChange()" ng-disabled="fileUploadModel[fileUploadOptions.keyname || 'image'].Uploaded">
             
             <!--USED FOR BUYER CAROUSEL LOGIC-->
-            {{fileUploadOptions.index}}
             <div class="input-group-btn" ng-if="fileUploadModel[fileUploadOptions.keyname].Items || fileUploadModel[fileUploadOptions.keyname] == 'Slides'">
                 <button type="button" 
                         id="OrderCloudFileUpload"

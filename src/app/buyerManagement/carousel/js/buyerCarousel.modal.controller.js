@@ -6,6 +6,7 @@ function BuyerCarouselCreateModalController(OrderCloudSDK, $uibModalInstance, $s
     var vm = this;
 
     vm.buyer = SelectedBuyer;
+    vm.buyerCopy = angular.copy(SelectedBuyer);
     if (!vm.buyer.xp) vm.buyer.xp = {};
     if (!vm.buyer.xp.Slides) vm.buyer.xp.Slides = {
         AutoPlay: true,
@@ -13,6 +14,7 @@ function BuyerCarouselCreateModalController(OrderCloudSDK, $uibModalInstance, $s
         NoWrap: false,
         Items: []
     };
+
     vm.index = vm.buyer.xp.Slides.Items.length || 0;
 
     vm.submit = submit;
@@ -26,12 +28,13 @@ function BuyerCarouselCreateModalController(OrderCloudSDK, $uibModalInstance, $s
         extensions: 'jpg, png, gif, jpeg, tiff, svg',
         invalidExtensions: null,
         uploadText: 'Upload an image',
+        onUpdate: vm.submit,
         multiple: false,
         modal: true
     };
 
     function submit() {
-        var duplicateID = _.pluck(vm.buyer.xp.Slides.Items, 'ID').indexOf(vm.newImage.ID) > -1;
+        var duplicateID = _.pluck(vm.buyer.xp.Slides.Items, 'ID').indexOf(vm.buyerCopy.xp.Slides.Items[vm.index].ID) > -1;
         if(!duplicateID) {
             return OrderCloudSDK.Buyers.Patch(vm.buyer.ID, {xp: {Slides: {Items: vm.buyer.xp.Slides.Items}}})
                 .then(function() {
@@ -48,6 +51,7 @@ function BuyerCarouselCreateModalController(OrderCloudSDK, $uibModalInstance, $s
     }
 
     function cancel() {
+        delete vm.buyer.xp.Slides.Items[vm.index];
         $uibModalInstance.close();
     }
 }

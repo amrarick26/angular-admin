@@ -34,11 +34,12 @@ function BuyerCarouselController($state, $rootScope, OrderCloudSDK, SelectedBuye
 
     $rootScope.$on('OC:CarouselIndexChange', function(event, index) {
         vm.index = index;
+        vm.fileUploadOptions.index = index;
         vm.buyer.slideData = vm.buyer.xp.Slides.Items[vm.index];
     });
 
     function updateSlide(imageSource) {
-        var duplicateID = _.pluck(vm.buyerCopy.xp.Slides.Items, 'ID').indexOf(vm.buyer.xp.Slides.Items[vm.index].ID) > -1;
+        if (vm.buyerCopy.xp.Slides.Items[vm.index].ID !== vm.buyer.xp.Slides.Items[vm.index].ID) var duplicateID = _.pluck(vm.buyerCopy.xp.Slides.Items, 'ID').indexOf(vm.buyer.xp.Slides.Items[vm.index].ID) > -1;
         if (!duplicateID) {
             if (imageSource) vm.buyer.xp.Slides.Items[vm.index].Src = imageSource;
             vm.buyer.xp.Slides.Items[vm.index] = vm.buyer.slideData;
