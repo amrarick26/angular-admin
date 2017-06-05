@@ -2,7 +2,7 @@ angular.module('orderCloud')
     .controller('BuyerCarouselCtrl', BuyerCarouselController)
 ;
 
-function BuyerCarouselController($state, $rootScope, OrderCloudSDK, SelectedBuyer, ocBuyerCarousel, toastr) {
+function BuyerCarouselController($state, $scope, OrderCloudSDK, SelectedBuyer, ocBuyerCarousel, toastr) {
     var vm = this;
 
     vm.buyer = SelectedBuyer;
@@ -14,12 +14,18 @@ function BuyerCarouselController($state, $rootScope, OrderCloudSDK, SelectedBuye
         NoWrap: false,
         Items: []
     };
-    if(!vm.index) vm.index = 0;
+    vm.index = 0;
     vm.slideData = vm.buyer.xp.Slides.Items.length ? vm.buyer.xp.Slides.Items[vm.index]: null;
 
     vm.disabled = true;
     vm.settings = vm.buyer.xp.Slides;
     if (vm.settings) vm.infiniteLoop = vm.settings.NoWrap ? vm.infiniteLoop = false : vm.infiniteLoop = true; //If NoWrap is set to true, it will not loop
+
+    vm.updateSlide = updateSlide; //updates data on a specific image
+    vm.saveImage = saveImage;
+    vm.deleteSlide = deleteSlide;
+    vm.uploadSlide = uploadSlide;
+    vm.updateSettings = updateSettings; //updates general carousel settings
 
     vm.fileUploadOptions = {
         keyname: 'Slides',
@@ -34,16 +40,15 @@ function BuyerCarouselController($state, $rootScope, OrderCloudSDK, SelectedBuye
         modal: true
     };
 
-    vm.updateSlide = updateSlide; //updates data on a specific image
-    vm.deleteSlide = deleteSlide;
-    vm.uploadSlide = uploadSlide;
-    vm.updateSettings = updateSettings; //updates general carousel settings
-
-    $rootScope.$on('OC:CarouselIndexChange', function(event, index) {
+    $scope.$on('OC:CarouselIndexChange', function(event, index) {
         vm.index = index;
         vm.fileUploadOptions.index = index;
         vm.slideData = vm.buyer.xp.Slides.Items[vm.index];
     });
+
+    function saveImage(model) {
+        vm.buyer.xp.Slides.Items[vm.index].Src = model.Slides.Items[vm.index].Src
+    }
 
     function updateSlide(imageSource) {
         if (vm.buyerCopy.xp.Slides.Items[vm.index].ID !== vm.buyer.xp.Slides.Items[vm.index].ID) var duplicateID = _.pluck(vm.buyerCopy.xp.Slides.Items, 'ID').indexOf(vm.buyer.xp.Slides.Items[vm.index].ID) > -1;

@@ -7,7 +7,7 @@
         <fieldset class="form-group">
             <label class="col-sm-3 control-label" for="imageID">Slide ID</label>
             <div class="col-sm-9">
-                <input type="text" class="form-control" id="imageID" name="ID" pattern="([A-Za-z0-9\-\_]+)" pattern-err-type="ID_Name" ng-model="buyerCarouselCreate.buyer.xp.Slides.Items[buyerCarouselCreate.index].ID" ng-required />
+                <input type="text" class="form-control" id="imageID" name="ID" pattern="([A-Za-z0-9\-\_]+)" pattern-err-type="ID_Name" ng-model="buyerCarouselCreate.buyer.xp.Slides.Items[buyerCarouselCreate.index].ID" required />
             </div>
         </fieldset>
         <fieldset class="form-group">
@@ -25,7 +25,7 @@
         <fieldset class="form-group">
             <label for="orderCloudUpload" class="col-sm-3 control-label"></label>
             <div class="col-sm-9">
-                <oc-file-upload file-upload-model="buyerCarouselCreate.buyer.xp" file-upload-options="buyerCarouselCreate.fileUploadOptions" ng-required></oc-file-upload>
+                <oc-file-upload file-upload-model="buyerCarouselCreate.buyer.xp" file-upload-options="buyerCarouselCreate.fileUploadOptions" required></oc-file-upload>
             </div>
         </fieldset>
     </div>
