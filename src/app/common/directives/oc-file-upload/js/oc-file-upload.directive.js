@@ -24,8 +24,9 @@ function ordercloudFileUpload($timeout, $uibModal, $ocFiles, OrderCloudSDK, ocFi
                 scope.fileUploadModel[scope.fileUploadOptions.keyname] = {};
         }
         else {
-            if (!scope.fileUploadModel[scope.fileUploadOptions.keyname] || !scope.fileUploadModel[scope.fileUploadOptions.keyname].Items || scope.fileUploadModel[scope.fileUploadOptions.keyname].Items.constructor != Array) {
-                scope.fileUploadModel[scope.fileUploadOptions.keyname] = {Items: []};
+            if (!scope.fileUploadModel[scope.fileUploadOptions.keyname] || !scope.fileUploadModel[scope.fileUploadOptions.keyname][scope.fileUploadOptions.arrayKeyName || 'Items'] || scope.fileUploadModel[scope.fileUploadOptions.keyname][scope.fileUploadOptions.arrayKeyName || 'Items'].constructor != Array) {
+                scope.fileUploadModel[scope.fileUploadOptions.keyname] = {};
+                scope.fileUploadModel[scope.fileUploadOptions.keyname][scope.fileUploadOptions.arrayKeyName || 'Items'] = [];
             }
         }
 
@@ -35,14 +36,15 @@ function ordercloudFileUpload($timeout, $uibModal, $ocFiles, OrderCloudSDK, ocFi
         var globalOptions = $ocFiles.GetFileUploadOptions();
         scope.fileUploadOptions = {
             keyname: scope.fileUploadOptions.keyname || globalOptions.keyname || (scope.fileUploadOptions.multiple ? 'images' : 'image'),
-            srcKeyname: scope.fileUploadOptions.srcKeyname || globalOptions.srcKeyname || (scope.fileUploadOptions.multiple ? 'Src' : 'URL'),
             index: scope.fileUploadOptions.index || 0, //used for Buyer Carousel
+            srcKeyname: scope.fileUploadOptions.srcKeyname || globalOptions.srcKeyname || 'URL',
             folder: scope.fileUploadOptions.folder || globalOptions.folder || null,
             extensions: scope.fileUploadOptions.extensions || globalOptions.extensions || null,
             invalidExtensions: scope.fileUploadOptions.invalidExtensions || globalOptions.invalidExtensions || null,
             uploadText: scope.fileUploadOptions.uploadText || globalOptions.uploadText || null,
             onUpdate: scope.fileUploadOptions.onUpdate || globalOptions.onUpdate || null,
             multiple: scope.fileUploadOptions.multiple || globalOptions.multiple || false,
+            arrayKeyName: scope.fileUploadOptions.arrayKeyName || globalOptions.arrayKeyName || 'Items',
             addText: scope.fileUploadOptions.addText || globalOptions.addText || null,
             maxLimit: scope.fileUploadOptions.maxLimit || globalOptions.maxLimit || null,
             additionalFields: scope.fileUploadOptions.additionalFields || globalOptions.additionalFields || null,
@@ -95,7 +97,7 @@ function ordercloudFileUpload($timeout, $uibModal, $ocFiles, OrderCloudSDK, ocFi
 
         scope.fileUploadModelCopy = angular.copy(scope.fileUploadModel);
         scope.dropped = function(index) {
-            scope.fileUploadModel[scope.fileUploadOptions.keyname || 'images'].Items.splice(index, 1);
+            scope.fileUploadModel[scope.fileUploadOptions.keyname || 'images'][scope.fileUploadOptions.arrayKeyName || 'Items'].splice(index, 1);
             callOnUpdate();
             scope.fileUploadModelCopy = angular.copy(scope.fileUploadModel);
         };
@@ -116,8 +118,8 @@ function ordercloudFileUpload($timeout, $uibModal, $ocFiles, OrderCloudSDK, ocFi
                         }
                     }
                     else {
-                        if (scope.fileUploadModel && scope.fileUploadModel[scope.fileUploadOptions.keyname || 'images'] && scope.fileUploadModel[scope.fileUploadOptions.keyname || 'images'].Items && scope.fileUploadModel[scope.fileUploadOptions.keyname || 'images'].Items[index]) {
-                            scope.fileUploadModel[scope.fileUploadOptions.keyname || 'images'].Items.splice(index, 1);
+                        if (scope.fileUploadModel && scope.fileUploadModel[scope.fileUploadOptions.keyname || 'images'] && scope.fileUploadModel[scope.fileUploadOptions.keyname || 'images'][scope.fileUploadOptions.arrayKeyName || 'Items'] && scope.fileUploadModel[scope.fileUploadOptions.keyname || 'images'][scope.fileUploadOptions.arrayKeyName || 'Items'][index]) {
+                            scope.fileUploadModel[scope.fileUploadOptions.keyname || 'images'][scope.fileUploadOptions.arrayKeyName || 'Items'].splice(index, 1);
                         }
                     }
 
@@ -139,9 +141,9 @@ function ordercloudFileUpload($timeout, $uibModal, $ocFiles, OrderCloudSDK, ocFi
                 .then(function(fileData) {
                     if (multiple) {
                         if (!scope.fileUploadModel) scope.fileUploadModel = {};
-                        if (!scope.fileUploadModel[scope.fileUploadOptions.keyname]) scope.fileUploadModel[scope.fileUploadOptions.keyname || 'images'] = {Items};
-                        scope.fileUploadModel[scope.fileUploadOptions.keyname || 'images'].Items[index][scope.fileUploadOptions.srcKeyname || 'URL'] = fileData.Location;
-                        scope.fileUploadModel[scope.fileUploadOptions.keyname || 'images'].Items[index].Uploaded = true;
+                        if (!scope.fileUploadModel[scope.fileUploadOptions.keyname]) scope.fileUploadModel[scope.fileUploadOptions.keyname || 'images'] = {Items: []};
+                        scope.fileUploadModel[scope.fileUploadOptions.keyname || 'images'][scope.fileUploadOptions.arrayKeyName || 'Items'][index][scope.fileUploadOptions.srcKeyname || 'URL'] = fileData.Location;
+                        scope.fileUploadModel[scope.fileUploadOptions.keyname || 'images'][scope.fileUploadOptions.arrayKeyName || 'Items'][index].Uploaded = true;
                     } else {
                         if (scope.fileUploadOptions.keyname == 'Slides') {
                             var buyerXP = scope.fileUploadModel,
@@ -225,7 +227,7 @@ function ordercloudFileUpload($timeout, $uibModal, $ocFiles, OrderCloudSDK, ocFi
                         valid = (notAllowed.Extensions.indexOf(ext) == -1 && notAllowed.Types.indexOf(event.target.files[0].type.split('/')[0]) == -1);
                     }
                     if (valid) {
-                        (multiple ? scope.fileUploadModel[scope.fileUploadOptions.keyname].Items[index] : scope).invalidExtension = false;
+                        (multiple ? scope.fileUploadModel[scope.fileUploadOptions.keyname][scope.fileUploadOptions.arrayKeyName || 'Items'][index] : scope).invalidExtension = false;
                         scope.$apply(function() {
                             ocFileReader.ReadAsDataUrl(event.target.files[0], scope)
                                 .then(function() {
@@ -235,7 +237,7 @@ function ordercloudFileUpload($timeout, $uibModal, $ocFiles, OrderCloudSDK, ocFi
                     }
                     else {
                         scope.$apply(function() {
-                            (multiple ? scope.fileUploadModel[scope.fileUploadOptions.keyname].Items[index] : scope).invalidExtension = true;
+                            (multiple ? scope.fileUploadModel[scope.fileUploadOptions.keyname][scope.fileUploadOptions.arrayKeyName || 'Items'][index] : scope).invalidExtension = true;
                             var input;
                             event.target.files[0] = null;
                             if (multiple) {
