@@ -64,7 +64,7 @@ function UploadController($scope, UploadService, ProductUploadService, UploadUti
         return UploadService.Parse([{File: vm.productFileData.Event}])
             .then(function(parsed) {
                 //FIXME: replace function here >
-                return UploadUtility.newCategoryImages(parsed.File);
+                return UploadUtility.rioProductPartyPS(parsed.File);
             });
     }
 
