@@ -34,7 +34,7 @@
                     <fieldset class="form-group">
                         <label for="ProductDescription" class="col-sm-3 control-label">Description</label>
                         <div class="col-sm-9">
-                            <textarea rows="4" id="ProductDescription" placeholder="(Optional)" class="form-control" ng-model="product.model.Description"></textarea>
+                            <text-angular id="ProductDescription" ng-model="product.model.Description" ta-toolbar="product.descriptionToolbar"></text-angular>
                         </div>
                     </fieldset>
                     <fieldset class="form-group">
@@ -83,12 +83,6 @@
                         </div>
                     </fieldset>
                 </form>
-            </div>
-            <div class="col-sm-4" oc-readonly-roles="ProductAdmin">
-                <fieldset class="form-group">
-                    <label>Product Image</label>
-                    <oc-file-upload file-upload-model="product.model.xp" file-upload-options="product.fileUploadOptions"></oc-file-upload>
-                </fieldset>
             </div>
         </div>
         <div class="visible-xs" oc-if-roles="ProductAdmin">

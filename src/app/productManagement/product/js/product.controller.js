@@ -12,21 +12,12 @@ function ProductController($rootScope, $state, toastr, OrderCloudSDK, ocProducts
     
     vm.navigationItems = ocNavItems.Filter(ocNavItems.Product());
 
-    vm.fileUploadOptions = {
-        keyname: 'image',
-        folder: null,
-        extensions: 'jpg, png, gif, jpeg, tiff',
-        invalidExtensions: null,
-        uploadText: 'Upload an image',
-        onUpdate: patchImage,
-        multiple: false
-    };
-
-    function patchImage(imageXP) {
-        return OrderCloudSDK.Products.Patch(vm.model.ID, {
-            xp: imageXP
-        });
-    }
+    vm.descriptionToolbar = [
+        ['html', 'bold', 'italics', 'underline', 'strikeThrough'],
+        ['h1', 'h2', 'h3', 'p'],
+        ['ul', 'ol'],
+        ['insertLink', 'insertImage', 'insertVideo']
+    ];
 
     function updateProduct() {
         var currentPrice = angular.copy(vm.model.DefaultPriceSchedule);
