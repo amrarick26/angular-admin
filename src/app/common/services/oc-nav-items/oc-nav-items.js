@@ -355,6 +355,15 @@ function OrderCloudNavItemsService(ocRoles) {
                     Items: ['PromotionRoles'],
                     Any: false
                 }
+            },
+            {
+                icon: 'fa-image',
+                state: 'buyerCarousel',
+                name: 'Carousel',
+                roles: {
+                    Items: ['BuyerRoles'],
+                    Any: false
+                }
             }
         ];
     }

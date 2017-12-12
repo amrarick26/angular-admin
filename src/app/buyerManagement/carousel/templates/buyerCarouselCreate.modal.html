@@ -1,0 +1,35 @@
+<form name="buyerCarouselCreate.form" class="form-horizontal" ng-submit="buyerCarouselCreate.submit()" autocomplete="off" novalidate oc-pretty-submit>
+    <div class="modal-header">
+        <button type="button" class="close" aria-label="Close" ng-click="buyerCarouselCreate.cancel()"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">New Address</h4>
+    </div>
+    <div class="modal-body">
+        <fieldset class="form-group">
+            <label class="col-sm-3 control-label" for="imageID">Slide ID</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" id="imageID" name="ID" pattern="([A-Za-z0-9\-\_]+)" pattern-err-type="ID_Name" ng-model="buyerCarouselCreate.buyer.xp.Slides.Items[buyerCarouselCreate.index].ID" required />
+            </div>
+        </fieldset>
+        <fieldset class="form-group">
+            <label class="col-sm-3 control-label" for="imageTitle">Slide Title</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" id="imageTitle" name="Title" placeholder="(Optional)" ng-model="buyerCarouselCreate.buyer.xp.Slides.Items[buyerCarouselCreate.index].Title" />
+            </div>
+        </fieldset>
+        <fieldset class="form-group">
+            <label class="col-sm-3 control-label" for="imageSubtitle">Slide Subtitle</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" id="imageSubtitle" name="Subtitle" placeholder="(Optional)" ng-model="buyerCarouselCreate.buyer.xp.Slides.Items[buyerCarouselCreate.index].SubText" />
+            </div>
+        </fieldset>
+        <fieldset class="form-group">
+            <label for="orderCloudUpload" class="col-sm-3 control-label"></label>
+            <div class="col-sm-9">
+                <oc-file-upload file-upload-model="buyerCarouselCreate.buyer.xp" file-upload-options="buyerCarouselCreate.fileUploadOptions" required></oc-file-upload>
+            </div>
+        </fieldset>
+    </div>
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-primary btn-block" cg-busy="buyerCarouselCreate.loading" ng-disabled="buyerCarouselCreate.form.$invalid">Save</button>
+    </div>
+</form>
